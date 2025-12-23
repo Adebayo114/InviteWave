@@ -1,0 +1,49 @@
+    /* Carousel container height */
+    .event-carousel {
+    height: 400px;
+    }
+
+    /* Image styling */
+    .carousel-img {
+    height: 400px;
+    object-fit: cover;
+    }
+
+    /* Overlay container */
+    .carousel-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 2;
+    max-width: 80%;
+    }
+
+    /* Dark overlay effect */
+    .carousel-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1;
+    }
+
+    /* Text styling */
+    .carousel-overlay h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    }
+
+    .carousel-overlay p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    }
+
+    /* Button spacing */
+    .carousel-overlay .btn {
+    padding: 10px 25px;
+    font-size: 1rem;
+    }

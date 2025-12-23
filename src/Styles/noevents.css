@@ -1,0 +1,26 @@
+    .no-events {
+    margin-top: 2rem;
+    font-weight: 500;
+    color: #555;
+    }
+
+    .event-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    }
+
+    .event-card {
+    background: #fff;
+    padding: 1.2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+
+    .event-card:hover{
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }

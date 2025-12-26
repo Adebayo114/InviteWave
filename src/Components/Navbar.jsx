@@ -1,5 +1,6 @@
     import { Link, useNavigate } from "react-router-dom";
     import { getAuthUser, logoutUser } from "../utils/auth";
+    import image from "../assets/logo/logo1.png";
     import "../Styles/Navbar.css";
 
     const Navbar = () => {
@@ -14,9 +15,15 @@
     return (
         <nav className="navbar navbar-expand-lg navbar-light shadow-sm px-3 py-2">
         <div className="container">
-            <Link className="navbar-brand fw-bold fs-4" to="/">
-            InviteWave
+                        <Link className="navbar-brand d-flex align-items-center fw-bold fs-4" to="/">
+            <img
+                src={image}
+                alt="InviteWave logo"
+                className="navbar-logo"
+            />
+            <span className="ms-2">InviteWave</span>
             </Link>
+
 
             <button
             className="navbar-toggler"

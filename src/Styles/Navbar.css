@@ -1,8 +1,14 @@
-    /* /* .navbar {
+    /* .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
     background-color: #0b3d91;
     color: rgb(76, 68, 68);
-    }
+    } */
+
+    .navbar-logo {
+        height: 40px;
+        width: auto;
+        display: block;
+        }

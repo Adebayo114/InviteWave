@@ -1,6 +1,6 @@
     import { Link, useNavigate } from "react-router-dom";
     import { getAuthUser, logoutUser } from "../utils/auth";
-    import image from "../assets/logo/logo1.png";
+    import image from "../assets/Logo/logo1.png";
     import "../Styles/Navbar.css";
 
     const Navbar = () => {

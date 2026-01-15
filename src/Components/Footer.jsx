@@ -29,9 +29,9 @@
             <div className="footer-section">
             <h4>Support</h4>
             <ul>
-                <li><Link to="#">Help Center</Link></li>
-                <li><Link to="#">Privacy Policy</Link></li>
-                <li><Link to="#">Terms & Conditions</Link></li>
+                <li><Link to="/help">Help Center</Link></li>
+                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link to="/terms-and-conditions">Terms & Conditions</Link></li>
             </ul>
             </div>
 

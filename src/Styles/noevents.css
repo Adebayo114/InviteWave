@@ -1,26 +1,181 @@
-    .no-events {
-    margin-top: 2rem;
-    font-weight: 500;
-    color: #555;
+        .no-events {
+        margin-top: 2rem;
+        font-weight: 500;
+        color: #555;
+        }
+
+        .event-grid {
+        margin-top: 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        }
+
+        .event-card {
+        background: #fff;
+        padding: 1.2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+
+        .event-card:hover{
+        transform: scale(1.02);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .explore-page {
+    margin: 2rem auto;
+    max-width: 1000px;
     }
 
-    .event-grid {
-    margin-top: 2rem;
+    .explore-header {
+    margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    }
+
+    .muted {
+    color: #666;
+    }
+
+    .explore-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
     }
 
     .event-card {
     background: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+    }
+
+    .event-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    }
+
+    .event-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin: 0;
+    }
+
+    .pill {
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    background: #f2f2f2;
+    text-transform: capitalize;
+    }
+
+    .secondary-btn {
+    margin-top: 0.9rem;
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #efefef;
+    }
+
+    .secondary-btn:hover {
+    background: #e6e6e6;
+    }
+
+    .empty-state {
+    margin-top: 2rem;
     padding: 1.2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    border-radius: 14px;
+    background: #f7f7f7;
+    }
+
+    .primary-btn {
+    margin-top: 0.8rem;
+    border: none;
+    border-radius: 999px;
+    padding: 0.7rem 1.2rem;
+    font-weight: 800;
+    cursor: pointer;
+    background: #000;
+    color: #fff;
+    }
+
+        .lock-badge {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    opacity: 0.9;
+    }
+
+    .locked-card {
+    opacity: 0.9;
+    position: relative;
+    }
+
+    .locked-card::after {
+    content: "Private";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
     }
 
 
-    .event-card:hover{
-    transform: scale(1.02);
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        /* Keep title and pills clean */
+    .event-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    }
+
+    .event-title {
+    flex: 1;
+    min-width: 140px;
+    }
+
+    /* Pills container */
+    .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+    }
+
+    /* Private pill */
+    .pill-private {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #111;
+    color: #000000;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    line-height: 1;
+    white-space: nowrap;
     }

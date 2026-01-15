@@ -22,3 +22,22 @@
     font-weight: 600;
     text-decoration: none;
     }
+
+
+    /* Fix category + private pill overlap */
+/* .event-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px ;
+  flex-wrap: wrap;
+}
+
+.event-title {
+  flex: 1;
+  min-width: 140px;
+}
+
+.pill {
+  white-space: nowrap;
+} */

@@ -1,6 +1,8 @@
     import React from "react";
     import { Routes, Route } from "react-router-dom";
-
+    import TermsAndCondition from "./Pages/TermsAndCondition";
+    import PrivacyPolicy from "./Pages/PrivacyPolicy";
+    import Help from "./Pages/Help";
     import Home from "./Pages/Home";
     import Explore from "./Pages/Explore";
     import CreateEvent from "./Pages/CreateEvents";
@@ -10,6 +12,7 @@
     import MyEvents from "./Pages/MyEvents";
     import EditEvent from "./Pages/EditEvent";
     import About from "./Pages/About";
+    import Categories from "./Pages/Categories";
 
     import ProtectedRoute from "./Components/ProtectedRoute";
 
@@ -23,6 +26,10 @@
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/categories" element={<Categories />} />
+        <Route path="/terms-and-conditions" element={<TermsAndCondition />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/help" element={<Help />} />
 
         {/* PROTECTED ROUTES */}
         <Route

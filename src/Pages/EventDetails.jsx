@@ -1,17 +1,48 @@
     import { useParams, useNavigate } from "react-router-dom";
-    import { useState } from "react";
-    import { getEvents } from "../utils/data";
+    import { useEffect, useState } from "react";
+    import { fetchEventById, deleteEvent } from "../services/eventsService";
+    import { useAuth } from "../context/useAuth";
     import "../Styles/EventDetails.css";
+
+    import { saveRSVP, removeRSVP, fetchRSVPCounts, fetchUserRSVP } from "../services/rsvpService";
 
     const EventDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
-    // ✅ Always read events dynamically
-    const events = getEvents();
-    const event = events.find((e) => e.id === Number(id));
+    // EVENT
+    const [event, setEvent] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // ✅ Time formatter (supports "HH:mm")
+    // RSVP (Firestore)
+    const [rsvp, setRsvp] = useState(null);
+    const [counts, setCounts] = useState({ yes: 0, maybe: 0, no: 0 });
+    const [rsvpLoading, setRsvpLoading] = useState(true);
+
+    // ✅ Private access (local “unlock”)
+    const [accessGranted, setAccessGranted] = useState(false);
+    const [codeInput, setCodeInput] = useState("");
+    const [codeError, setCodeError] = useState("");
+
+    // LOAD EVENT
+    useEffect(() => {
+        const load = async () => {
+        try {
+            setLoading(true);
+            const data = await fetchEventById(id);
+            setEvent(data || null);
+        } catch (err) {
+            console.error(err);
+            setEvent(null);
+        } finally {
+            setLoading(false);
+        }
+        };
+        load();
+    }, [id]);
+
+    // TIME FORMAT
     const formatTime = (time) => {
         if (!time) return "";
         const [hour, minute] = time.split(":");
@@ -21,22 +52,45 @@
         return `${formattedHour}:${minute} ${suffix}`;
     };
 
-    // =========================
-    // RSVP STORAGE (demo only)
-    // =========================
-    const storageKey = `rsvp-event-${id}`;
-    const savedData = localStorage.getItem(storageKey);
-    const savedRsvp = savedData ? JSON.parse(savedData).response : null;
+    // HOST CHECK
+    const isHost = user?.uid && event?.userId && user.uid === event.userId;
 
-    const [rsvp, setRsvp] = useState(savedRsvp);
+    // ✅ check local unlock after event loads
+    useEffect(() => {
+        if (!event?.id) return;
+        const accessKey = `event-access-${event.id}`;
+        setAccessGranted(localStorage.getItem(accessKey) === "true");
+    }, [event?.id]);
 
-    const [counts, setCounts] = useState(() => ({
-        yes: savedRsvp === "yes" ? 1 : 0,
-        maybe: savedRsvp === "maybe" ? 1 : 0,
-        no: savedRsvp === "no" ? 1 : 0,
-    }));
+    // LOAD RSVP (Firestore) when event+user ready
+    useEffect(() => {
+        const loadRSVP = async () => {
+        if (!event?.id) return;
 
-    const eventUrl = `${window.location.origin}/event/${id}`;
+        try {
+            setRsvpLoading(true);
+
+            const c = await fetchRSVPCounts(event.id);
+            setCounts(c);
+
+            if (user?.uid) {
+            const my = await fetchUserRSVP(event.id, user.uid);
+            setRsvp(my);
+            } else {
+            setRsvp(null);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setRsvpLoading(false);
+        }
+        };
+
+        loadRSVP();
+    }, [event?.id, user?.uid]);
+
+    // UI STATES
+    if (loading) return <div className="container">Loading...</div>;
 
     if (!event) {
         return (
@@ -47,82 +101,128 @@
         );
     }
 
-    // RSVP HANDLER
-    const handleRSVP = (choice) => {
-        if (rsvp === choice) return;
+    // ✅ PRIVATE LOCK SCREEN (before showing event details)
+    if (event.isPrivate && !isHost && !accessGranted) {
+        const accessKey = `event-access-${event.id}`;
 
-        setCounts((prev) => ({
-        ...prev,
-        [choice]: prev[choice] + 1,
-        ...(rsvp ? { [rsvp]: prev[rsvp] - 1 } : {}),
-        }));
+        return (
+        <div className="container event-details">
+            <button className="back-btn" onClick={() => navigate(-1)}>
+            ← Back
+            </button>
 
-        setRsvp(choice);
+            <div className="private-lock">
+            <h2>🔒 Private Event</h2>
+            <p className="muted">Enter the invite code to view this event.</p>
 
-        localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-            response: choice,
-            timestamp: Date.now(),
-        })
+            <div className="code-box">
+                <input
+                className="code-input"
+                placeholder="Enter invite code"
+                value={codeInput}
+                onChange={(e) => {
+                    setCodeInput(e.target.value);
+                    setCodeError("");
+                }}
+                />
+
+                <button
+                className="primary-btn"
+                onClick={() => {
+                    const correct = (event.inviteCode || "").trim().toUpperCase();
+                    const typed = codeInput.trim().toUpperCase();
+
+                    if (!typed) return setCodeError("Please enter the code.");
+                    if (typed !== correct) return setCodeError("Wrong code. Try again.");
+
+                    localStorage.setItem(accessKey, "true");
+                    setAccessGranted(true);
+                }}
+                >
+                Unlock
+                </button>
+
+                {codeError && <p className="error-text">{codeError}</p>}
+            </div>
+            </div>
+        </div>
         );
-    };
+    }
 
-    // ✅ MAP LINK (uses saved link if provided)
+    // MAP + TIME
     const mapLink =
         event.mapUrl && event.mapUrl.trim() !== ""
         ? event.mapUrl
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`;
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location || "")}`;
 
-    // ✅ Time display: start – end (if end exists)
     const timeDisplay = event.endTime
         ? `${formatTime(event.time)} – ${formatTime(event.endTime)}`
         : `${formatTime(event.time)}`;
 
-    const isHost = JSON.parse(localStorage.getItem("myEventIds") || "[]").includes(event.id);
+    const eventUrl = `${window.location.origin}/event/${id}`;
+
+    // DELETE
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+        if (!confirmDelete) return;
+
+        try {
+        await deleteEvent(event.id);
+        navigate("/my-events");
+        } catch (err) {
+        console.error(err);
+        alert("Failed to delete event. Please try again.");
+        }
+    };
+
+    // RSVP HANDLER (Firestore)
+    const handleRSVP = async (choice) => {
+        if (!user?.uid) {
+        alert("Please login to RSVP.");
+        navigate("/login");
+        return;
+        }
+
+        try {
+        if (rsvp === choice) {
+            await removeRSVP(event.id, user.uid);
+            setRsvp(null);
+        } else {
+            await saveRSVP(event.id, user.uid, choice);
+            setRsvp(choice);
+        }
+
+        const updatedCounts = await fetchRSVPCounts(event.id);
+        setCounts(updatedCounts);
+        } catch (err) {
+        console.error(err);
+        alert("Failed to update RSVP. Try again.");
+        }
+    };
 
     return (
         <div className="container event-details">
-        {/* BACK */}
         <button className="back-btn" onClick={() => navigate(-1)}>
             ← Back
         </button>
 
-        {/* HOST CONTROLS */}
         {isHost && (
             <div className="host-controls">
             <button className="secondary-btn" onClick={() => navigate(`/edit-event/${event.id}`)}>
                 Edit Event
             </button>
 
-            <button
-                className="danger-btn"
-                onClick={() => {
-                const confirmDelete = window.confirm("Are you sure you want to delete this event?");
-                if (!confirmDelete) return;
-
-                const events = JSON.parse(localStorage.getItem("events")) || [];
-                const myEventIds = JSON.parse(localStorage.getItem("myEventIds")) || [];
-
-                const updatedEvents = events.filter((e) => e.id !== event.id);
-                const updatedIds = myEventIds.filter((eid) => eid !== event.id);
-
-                localStorage.setItem("events", JSON.stringify(updatedEvents));
-                localStorage.setItem("myEventIds", JSON.stringify(updatedIds));
-
-                navigate("/my-events");
-                }}
-            >
+            <button className="danger-btn" onClick={handleDelete}>
                 Delete Event
             </button>
             </div>
         )}
 
-        {/* EVENT INFO */}
         <h1>{event.title}</h1>
 
         <p className="event-meta">
             📅 {event.date} · ⏰ {timeDisplay}
+            {event.isPrivate ? " · 🔒 Private" : ""}
         </p>
 
         <p className="event-meta">📍 {event.location}</p>
@@ -133,53 +233,48 @@
 
         <p className="event-description">{event.description}</p>
 
-        {/* MAP */}
         <a href={mapLink} target="_blank" rel="noopener noreferrer" className="map-btn">
             📍 Open in Google Maps
         </a>
 
-        {/* RSVP SECTION */}
+        {/* RSVP */}
         <div className="rsvp-section">
             <h3>Will you attend?</h3>
 
-            <div className="rsvp-buttons">
-            <button className={`yes ${rsvp === "yes" ? "active" : ""}`} onClick={() => handleRSVP("yes")}>
-                Yes
-            </button>
+            {rsvpLoading ? (
+            <p className="muted">Loading RSVP...</p>
+            ) : (
+            <>
+                <div className="rsvp-buttons">
+                <button className={`yes ${rsvp === "yes" ? "active" : ""}`} onClick={() => handleRSVP("yes")}>
+                    Yes
+                </button>
 
-            <button className={`maybe ${rsvp === "maybe" ? "active" : ""}`} onClick={() => handleRSVP("maybe")}>
-                Maybe
-            </button>
+                <button className={`maybe ${rsvp === "maybe" ? "active" : ""}`} onClick={() => handleRSVP("maybe")}>
+                    Maybe
+                </button>
 
-            <button className={`no ${rsvp === "no" ? "active" : ""}`} onClick={() => handleRSVP("no")}>
-                No
-            </button>
-            </div>
+                <button className={`no ${rsvp === "no" ? "active" : ""}`} onClick={() => handleRSVP("no")}>
+                    No
+                </button>
+                </div>
 
-            {rsvp && (
-            <p className="rsvp-feedback">
-                You responded: <strong>{rsvp.toUpperCase()}</strong>
-            </p>
+                {rsvp && (
+                <p className="rsvp-feedback">
+                    You responded: <strong>{rsvp.toUpperCase()}</strong> (click again to remove)
+                </p>
+                )}
+
+                <div className="rsvp-counts">
+                <span>✅ {counts.yes} going</span>
+                <span>🤔 {counts.maybe} maybe</span>
+                <span>❌ {counts.no} not coming</span>
+                </div>
+            </>
             )}
-
-            <div className="rsvp-counts">
-            <span>✅ {counts.yes} going</span>
-            <span>🤔 {counts.maybe} maybe</span>
-            <span>❌ {counts.no} not coming</span>
-            </div>
         </div>
 
-        {/* GUEST PREVIEW */}
-        <div className="guest-preview">
-            <h3>Guest Responses</h3>
-            <ul>
-            <li>✅ Going: {counts.yes}</li>
-            <li>🤔 Maybe: {counts.maybe}</li>
-            <li>❌ Not coming: {counts.no}</li>
-            </ul>
-        </div>
-
-        {/* INVITE SHARING */}
+        {/* INVITE */}
         <div className="invite-section">
             <h3>Invite others</h3>
 
@@ -209,6 +304,13 @@
                 Share on X
             </a>
             </div>
+
+            {/* ✅ show code only to host */}
+            {isHost && event.isPrivate && (
+            <p className="muted" style={{ marginTop: "10px" }}>
+                Invite Code: <strong>{event.inviteCode}</strong>
+            </p>
+            )}
         </div>
         </div>
     );

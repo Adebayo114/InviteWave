@@ -1,45 +1,84 @@
     import { useState } from "react";
     import { useNavigate, Link } from "react-router-dom";
-    import { loginUser } from "../utils/auth";
+    import { loginEmail, loginWithGoogle } from "../services/authService";
     import "../Styles/Auth.css";
 
     const Login = () => {
-    const [name, setName] = useState("");
     const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleEmailLogin = async (e) => {
         e.preventDefault();
+        if (!email || !password) return;
 
-        if (!name.trim()) {
-        alert("Please enter your name");
-        return;
-        }
-
-        loginUser({
-        id: Date.now(),
-        name,
-        });
-
+        try {
+        setLoading(true);
+        await loginEmail(email, password);
         navigate("/my-events");
+        } catch (err) {
+        console.error(err);
+        alert(err.message || "Login failed");
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    const handleGoogle = async () => {
+        try {
+        setLoading(true);
+        await loginWithGoogle();
+        navigate("/my-events");
+        } catch (err) {
+        console.error(err);
+        alert(err.message || "Google sign-in failed");
+        } finally {
+        setLoading(false);
+        }
     };
 
     return (
-        <div className="container auth-page">
-        <h1>Login</h1>
+        <div className="auth-page">
+        <div className="auth-card">
+            <h2 className="auth-title">Welcome back</h2>
+            <p className="auth-subtitle">Login to manage your events</p>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+            <button className="auth-google" onClick={handleGoogle} disabled={loading}>
+            Continue with Google
+            </button>
+
+            <div className="auth-divider">
+            <span>or</span>
+            </div>
+
+            <form onSubmit={handleEmailLogin} className="auth-form">
+            <label className="auth-label">Email</label>
             <input
-            type="text"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+                className="auth-input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
 
-            <button type="submit">Login</button>
-        </form>
+            <label className="auth-label">Password</label>
+            <input
+                className="auth-input"
+                type="password"
+                placeholder="Your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
 
-        <div className="auth-footer">
+            <button className="auth-btn" type="submit" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+            </button>
+            </form>
+
+            <p className="auth-footer">
             Don’t have an account? <Link to="/signup">Sign up</Link>
+            </p>
         </div>
         </div>
     );

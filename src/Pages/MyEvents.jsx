@@ -1,30 +1,19 @@
     import { useNavigate } from "react-router-dom";
-    import { getEvents } from "../utils/data";
+    import { useEffect, useState } from "react";
+
     import BackButton from "../Components/BackButton";
-    import { getAuthUser } from "../utils/auth";
+    import { useAuth } from "../context/useAuth";
+    import { fetchMyEvents } from "../services/eventsService";
+
     import "../Styles/MyEvents.css";
 
     const MyEvents = () => {
     const navigate = useNavigate();
+    const { user, authLoading } = useAuth();
 
-    const events = getEvents();
-//    const myEventIds = JSON.parse(localStorage.getItem("myEventIds")) || [];
- 
-   const user = getAuthUser();
-const myEvents = events.filter((e) => e.userId === user.id);
+    const [myEvents, setMyEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // ✅ Time formatter (supports "HH:mm")
-    const formatTime = (time) => {
-        if (!time) return "";
-        const [hour, minute] = time.split(":");
-        const h = Number(hour);
-        const suffix = h >= 12 ? "PM" : "AM";
-        const formattedHour = h % 12 || 12;
-        return `${formattedHour}:${minute} ${suffix}`;
-    };
-
-
-    
     // helper: read your RSVP (demo on this device)
     const getMyRsvp = (eventId) => {
         const saved = localStorage.getItem(`rsvp-event-${eventId}`);
@@ -34,9 +23,60 @@ const myEvents = events.filter((e) => e.userId === user.id);
         const parsed = JSON.parse(saved);
         return parsed?.response || null;
         } catch {
-        return saved;
+        return null;
         }
     };
+
+    useEffect(() => {
+        const load = async () => {
+        try {
+            setLoading(true);
+
+            // If somehow this page is reached without login
+            if (!user?.uid) {
+            setMyEvents([]);
+            return;
+            }
+
+            const data = await fetchMyEvents(user.uid); // ✅ Firebase uid
+            setMyEvents(data);
+        } catch (err) {
+            console.error(err);
+            setMyEvents([]);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        // wait until auth is resolved so it doesn't flash "Please login"
+        if (!authLoading) load();
+    }, [user?.uid, authLoading]);
+
+    if (authLoading || loading) {
+        return (
+        <div className="container my-events">
+            <BackButton />
+            <h2 className="page-title">My Events</h2>
+            <p className="muted">Loading your events...</p>
+        </div>
+        );
+    }
+
+    if (!user?.uid) {
+        return (
+        <div className="container my-events">
+            <BackButton />
+            <h2 className="page-title">My Events</h2>
+
+            <div className="empty-state">
+            <p>Please login to see your events.</p>
+            <button className="primary-btn" onClick={() => navigate("/login")}>
+                Go to Login
+            </button>
+            </div>
+        </div>
+        );
+    }
 
     if (myEvents.length === 0) {
         return (
@@ -50,6 +90,11 @@ const myEvents = events.filter((e) => e.userId === user.id);
                 Create your first event
             </button>
             </div>
+
+            <p className="note">
+            Note: RSVP totals are demo-only right now (this device). Firebase later will
+            make counts global.
+            </p>
         </div>
         );
     }
@@ -62,10 +107,6 @@ const myEvents = events.filter((e) => e.userId === user.id);
         <div className="my-events-grid">
             {myEvents.map((event) => {
             const myRsvp = getMyRsvp(event.id);
-
-            const timeDisplay = event.endTime
-                ? `${formatTime(event.time)} – ${formatTime(event.endTime)}`
-                : `${formatTime(event.time)}`;
 
             return (
                 <div
@@ -81,8 +122,10 @@ const myEvents = events.filter((e) => e.userId === user.id);
                 </div>
 
                 <p className="muted">📍 {event.location}</p>
+
                 <p className="muted">
-                    📅 {event.date} · ⏰ {timeDisplay}
+                    📅 {event.date} · ⏰ {event.time}
+                    {event.endTime ? ` – ${event.endTime}` : ""}
                 </p>
 
                 <div className="card-bottom">
@@ -109,7 +152,8 @@ const myEvents = events.filter((e) => e.userId === user.id);
         </div>
 
         <p className="note">
-            Note: RSVP totals are demo-only right now (this device). Firebase later will make counts global.
+            Note: RSVP totals are demo-only right now (this device). Firebase later will make
+            counts global.
         </p>
         </div>
     );

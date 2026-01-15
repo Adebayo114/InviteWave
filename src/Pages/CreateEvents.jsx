@@ -1,12 +1,13 @@
     import { useState } from "react";
     import { useNavigate } from "react-router-dom";
     import BackButton from "../Components/BackButton";
-    import { getAuthUser } from "../utils/auth";
-
+    import { createEvent } from "../services/eventsService";
+    import { useAuth } from "../context/useAuth"; // adjust path if yours is different
     import "../Styles/CreateEvents.css";
 
     const CreateEvents = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [formData, setFormData] = useState({
         title: "",
@@ -14,112 +15,109 @@
         location: "",
         mapUrl: "",
         date: "",
-        time: "",      // start time
-        endTime: "",   // end time
+        time: "",
+        endTime: "",
         description: "",
+
+        // ✅ NEW: privacy
+        isPrivate: false,
+        inviteCode: "",
     });
-    
 
     const handleChange = (e) => {
-        setFormData({
-        ...formData,
+        setFormData((prev) => ({
+        ...prev,
         [e.target.name]: e.target.value,
-        });
+        }));
     };
 
-    const handleSubmit = (e) => {
+    const generateCode = () =>
+        Math.random().toString(36).slice(2, 8).toUpperCase(); // e.g. "8KD2QA"
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!user?.uid) {
+        alert("Please login to create an event.");
+        navigate("/login");
+        return;
+        }
 
         if (!formData.title || !formData.category || !formData.location) {
         alert("Please fill in required fields");
         return;
         }
 
-        // Validate end time (only if both are set)
         if (formData.time && formData.endTime && formData.endTime <= formData.time) {
         alert("End time must be after start time");
         return;
         }
 
-        const user = getAuthUser();
+        const finalInviteCode = formData.isPrivate
+        ? (formData.inviteCode.trim() || generateCode())
+        : "";
 
-        const newEvent = {
-        id: Date.now(),
-        ...formData,
-        host: user.name,
-        userId: user.id,
-        featured: false,
-        createdAt: new Date().toISOString(),
-        };
+        try {
+        const newId = await createEvent({
+            title: formData.title.trim(),
+            category: formData.category,
+            location: formData.location.trim(),
+            mapUrl: formData.mapUrl.trim(),
+            date: formData.date,
+            time: formData.time,
+            endTime: formData.endTime,
+            description: formData.description.trim(),
 
+            // ✅ store owner
+            userId: user.uid,
+            host: user.displayName || user.email || "Host",
 
-        const existingEvents = JSON.parse(localStorage.getItem("events")) || [];
+            // ✅ privacy fields
+            isPrivate: formData.isPrivate,
+            inviteCode: finalInviteCode,
 
-        localStorage.setItem(
-        "events",
-        JSON.stringify([newEvent, ...existingEvents])
-        );
+            featured: false,
+        });
 
-        const myEventIds = JSON.parse(localStorage.getItem("myEventIds")) || [];
-        localStorage.setItem(
-        "myEventIds",
-        JSON.stringify([newEvent.id, ...myEventIds])
-        );
-
-        navigate(`/event/${newEvent.id}`);
-
-        
+        navigate(`/event/${newId}`);
+        } catch (err) {
+        console.error(err);
+        alert("Failed to create event. Please try again.");
+        }
     };
 
-    
     return (
-        
         <div className="container create-event">
-            <BackButton />
+        <BackButton />
         <h1>Create Event</h1>
 
         <form onSubmit={handleSubmit} className="event-form">
-            {/* TITLE */}
             <input
             type="text"
             name="title"
-            placeholder="Event title"
+            placeholder="Event title *"
             value={formData.title}
             onChange={handleChange}
             />
 
-            {/* CATEGORY */}
-            <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            >
-            <option value="">Select category</option>
+            <select name="category" value={formData.category} onChange={handleChange}>
+            <option value="">Select category *</option>
             <option value="birthday">Birthday</option>
             <option value="wedding">Wedding</option>
             <option value="graduation">Graduation</option>
             <option value="party">Party</option>
+            <option value="baby-shower">Baby Shower</option>
             <option value="corporate">Corporate</option>
+            <option value="concert">Concert</option>
+            <option value="sports">Sports</option>
             </select>
 
-            {/* DATE */}
-            <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            />
+            <input type="date" name="date" value={formData.date} onChange={handleChange} />
 
-            {/* TIME SECTION */}
             <div className="time-row">
             <div className="time-field">
                 <label className="time-label">Start Time</label>
-                <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleChange}
-                />
+                <input type="time" name="time" value={formData.time} onChange={handleChange} />
             </div>
 
             <div className="time-field">
@@ -133,16 +131,14 @@
             </div>
             </div>
 
-            {/* LOCATION */}
             <input
             type="text"
             name="location"
-            placeholder="Location"
+            placeholder="Location *"
             value={formData.location}
             onChange={handleChange}
             />
 
-            {/* MAP URL */}
             <input
             type="url"
             name="mapUrl"
@@ -151,7 +147,33 @@
             onChange={handleChange}
             />
 
-            {/* DESCRIPTION */}
+            {/* ✅ PRIVATE EVENT TOGGLE */}
+            <div className="privacy-row">
+            <label className="privacy-check">
+                <input
+                type="checkbox"
+                checked={formData.isPrivate}
+                onChange={(e) =>
+                    setFormData((prev) => ({
+                    ...prev,
+                    isPrivate: e.target.checked,
+                    }))
+                }
+                />
+                <span>Private event (requires invite code)</span>
+            </label>
+
+            {formData.isPrivate && (
+                <input
+                type="text"
+                name="inviteCode"
+                placeholder="Set invite code (optional)"
+                value={formData.inviteCode}
+                onChange={handleChange}
+                />
+            )}
+            </div>
+
             <textarea
             name="description"
             placeholder="Event description"
@@ -160,6 +182,12 @@
             />
 
             <button type="submit">Create Event</button>
+
+            {formData.isPrivate && (
+            <p className="muted">
+                If you don’t enter a code, InviteWave will auto-generate one for you.
+            </p>
+            )}
         </form>
         </div>
     );

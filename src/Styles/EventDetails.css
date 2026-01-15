@@ -1,125 +1,125 @@
-        .event-details {
-        margin: 2rem auto;
-        max-width: 700px;
+            .event-details {
+            margin: 2rem auto;
+            max-width: 700px;
+            }
+
+            .back-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            }
+
+            .event-meta {
+            color: #555;
+            margin: 0.3rem 0;
+            }
+
+            .event-host {
+            margin: 1rem 0;
+            }
+
+            .event-description {
+            margin: 1.5rem 0;
+            line-height: 1.6;
+            }
+
+            .map-btn,
+            .rsvp-btn {
+            display: inline-block;
+            margin-right: 1rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            }
+
+            .map-btn {
+            background: #eee;
+            color: #000;
+            }
+
+            .rsvp-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            }
+
+            .rsvp-section {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: #f9f9f9;
         }
 
-        .back-btn {
-        background: none;
-        border: none;
-        font-size: 1rem;
-        cursor: pointer;
-        margin-bottom: 1rem;
-        }
-
-        .event-meta {
-        color: #555;
-        margin: 0.3rem 0;
-        }
-
-        .event-host {
+        .rsvp-buttons {
+        display: flex;
+        gap: 1rem;
         margin: 1rem 0;
         }
 
-        .event-description {
-        margin: 1.5rem 0;
-        line-height: 1.6;
-        }
-
-        .map-btn,
-        .rsvp-btn {
-        display: inline-block;
-        margin-right: 1rem;
+        .rsvp-buttons button {
         padding: 0.6rem 1.4rem;
         border-radius: 25px;
-        text-decoration: none;
+        border: none;
+        cursor: pointer;
         font-weight: 600;
         }
 
-        .map-btn {
-        background: #eee;
-        color: #000;
+        .rsvp-buttons .yes {
+        background: #e6f7ea;
+        color: #1e7e34;
         }
 
-        .rsvp-btn {
-        background: #000;
-        color: #fff;
-        border: none;
-        cursor: pointer;
+        .rsvp-buttons .maybe {
+        background: #fff3cd;
+        color: #856404;
         }
 
-        .rsvp-section {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: #f9f9f9;
-    }
-
-    .rsvp-buttons {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem 0;
-    }
-
-    .rsvp-buttons button {
-    padding: 0.6rem 1.4rem;
-    border-radius: 25px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    }
-
-    .rsvp-buttons .yes {
-    background: #e6f7ea;
-    color: #1e7e34;
-    }
-
-    .rsvp-buttons .maybe {
-    background: #fff3cd;
-    color: #856404;
-    }
-
-    .rsvp-buttons .no {
-    background: #f8d7da;
-    color: #721c24;
-    }
-
-    .rsvp-buttons .active {
-    outline: 2px solid #000;
-    }
-
-    .rsvp-feedback {
-    margin-top: 0.5rem;
-    font-weight: 500;
-    }
-    
-        .rsvp-counts {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 1rem;
-        font-size: 0.95rem;
+        .rsvp-buttons .no {
+        background: #f8d7da;
+        color: #721c24;
         }
 
-        .invite-section {
-    margin-top: 2.5rem;
-    padding: 1.5rem;
-    border-radius: 12px;
-    background: #f1f1f1;
-    }
+        .rsvp-buttons .active {
+        outline: 2px solid #000;
+        }
 
-        .map-btn:hover {
-    background: #ddd;
-    }
+        .rsvp-feedback {
+        margin-top: 0.5rem;
+        font-weight: 500;
+        }
+        
+            .rsvp-counts {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            }
 
-    .rsvp-buttons button:hover {
-    transform: translateY(-1px);
-    }
+            .invite-section {
+        margin-top: 2.5rem;
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: #f1f1f1;
+        }
 
-    .invite-actions button:hover,
-    .invite-actions a:hover,
-    .secondary-btn:hover,
-    .danger-btn:hover {
-    opacity: 0.9;
-    }
+            .map-btn:hover {
+        background: #ddd;
+        }
+
+        .rsvp-buttons button:hover {
+        transform: translateY(-1px);
+        }
+
+        .invite-actions button:hover,
+        .invite-actions a:hover,
+        .secondary-btn:hover,
+        .danger-btn:hover {
+        opacity: 0.9;
+        }
 
     .invite-actions {
     display: flex;
@@ -130,89 +130,139 @@
 
     .invite-actions button,
     .invite-actions a {
-    padding: 0.6rem 1.4rem;
-    border-radius: 25px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
     border: none;
-    background: #000;
-    color: #fff;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     }
 
-    .invite-actions a {
-    background: #25d366; /* WhatsApp green */
-    }
-
-    .invite-actions a:last-child {
-    background: #1da1f2; /* Twitter/X blue */
-    }
-
-
-        .guest-preview {
-    margin-top: 2rem;
-    padding: 1.2rem;
-    background: #f4f4f4;
-    border-radius: 12px;
-    }
-
-    .guest-preview ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 0.8rem;
-    }
-
-    .guest-preview li {
-    margin-bottom: 0.4rem;
-    font-weight: 500;
-    }
-
-
-        .host-controls {
-    margin: 1rem 0;
-    display: flex;
-    gap: 0.75rem;
-    }
-
-    .secondary-btn {
-    background: #efefef;
-    color: #000;
-    border: none;
-    border-radius: 999px;
-    padding: 0.45rem 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    }
-
-    .danger-btn {
-    background: #dc3545;
+    /* Copy link button */
+    .invite-actions button {
+    background: #000;
     color: #fff;
-    border: none;
-    border-radius: 999px;
-    padding: 0.45rem 1rem;
-    font-weight: 700;
-    cursor: pointer;
     }
 
-        @media (max-width: 600px) {
-    .event-details {
-        padding: 0 1rem;
+    /* Default link style */
+    .invite-actions a {
+    background: #eee;
+    color: #111;
     }
 
-    .rsvp-buttons,
-    .invite-actions,
-    .host-controls {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    }
-    .map-btn {
-    border: 1px solid #ccc;
-    }
+    /* Optional: make WhatsApp + X special with class later if you want */
+
+            .guest-preview {
+        margin-top: 2rem;
+        padding: 1.2rem;
+        background: #f4f4f4;
+        border-radius: 12px;
+        }
+
+        .guest-preview ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 0.8rem;
+        }
+
+        .guest-preview li {
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+        }
 
 
-    .rsvp-section,
-    .invite-section,
-    .guest-preview {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-    }
+            .host-controls {
+        margin: 1rem 0;
+        display: flex;
+        gap: 0.75rem;
+        }
+
+        .secondary-btn {
+        background: #efefef;
+        color: #000;
+        border: none;
+        border-radius: 999px;
+        padding: 0.45rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        }
+
+        .danger-btn {
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 0.45rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        }
+
+            @media (max-width: 600px) {
+        .event-details {
+            padding: 0 1rem;
+        }
+
+        .rsvp-buttons,
+        .invite-actions,
+        .host-controls {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        }
+        .map-btn {
+        border: 1px solid #ccc;
+        }
+
+
+        .rsvp-section,
+        .invite-section,
+        .guest-preview {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+
+            .private-lock {
+        margin-top: 1.5rem;
+        padding: 1.2rem;
+        border-radius: 14px;
+        background: #f7f7f7;
+        border: 1px solid #e7e7e7;
+        }
+
+        .code-box {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+        align-items: center;
+        }
+
+        .code-input {
+        flex: 1;
+        min-width: 220px;
+        padding: 0.7rem 0.9rem;
+        border-radius: 12px;
+        border: 1px solid #ddd;
+        outline: none;
+        }
+
+        .primary-btn {
+            
+        background: #000;
+        color: #fff;
+        padding: 0.7rem 1.2rem;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        }
+
+        .error-text {
+        width: 100%;
+        margin-top: 0.4rem;
+        color: #c62828;
+        font-weight: 600;
+        }

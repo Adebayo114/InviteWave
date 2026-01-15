@@ -75,7 +75,7 @@
             {/* See More */}
             <div
             className="category-item"
-            onClick={() => navigate("/explore")}
+            onClick={() => navigate("/categories")}
             >
             <div className="category-circle see-more">
                 →

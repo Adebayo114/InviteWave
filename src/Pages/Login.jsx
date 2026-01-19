@@ -1,10 +1,15 @@
     import { useState } from "react";
-    import { useNavigate, Link } from "react-router-dom";
+    import { useNavigate, Link, useLocation } from "react-router-dom";
     import { loginEmail, loginWithGoogle } from "../services/authService";
     import "../Styles/Auth.css";
 
     const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // ✅ where user was trying to go before being forced to login
+    const from = location.state?.from || "/my-events";
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -16,7 +21,7 @@
         try {
         setLoading(true);
         await loginEmail(email, password);
-        navigate("/my-events");
+        navigate(from, { replace: true }); // ✅ go back
         } catch (err) {
         console.error(err);
         alert(err.message || "Login failed");
@@ -29,7 +34,7 @@
         try {
         setLoading(true);
         await loginWithGoogle();
-        navigate("/my-events");
+        navigate(from, { replace: true }); // ✅ go back
         } catch (err) {
         console.error(err);
         alert(err.message || "Google sign-in failed");
@@ -42,7 +47,7 @@
         <div className="auth-page">
         <div className="auth-card">
             <h2 className="auth-title">Welcome back</h2>
-            <p className="auth-subtitle">Login to manage your events</p>
+            <p className="auth-subtitle">Login to continue</p>
 
             <button className="auth-google" onClick={handleGoogle} disabled={loading}>
             Continue with Google

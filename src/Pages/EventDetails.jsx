@@ -1,10 +1,20 @@
     import { useParams, useNavigate } from "react-router-dom";
     import { useEffect, useState } from "react";
-    import { fetchEventById, deleteEvent } from "../services/eventsService";
+    import {
+    fetchEventById,
+    deleteEvent,
+    setFeatured,
+    } from "../services/eventsService";
     import { useAuth } from "../context/useAuth";
     import "../Styles/EventDetails.css";
+    import RecommendedEvents from "../Components/RecommendedEvents";
 
-    import { saveRSVP, removeRSVP, fetchRSVPCounts, fetchUserRSVP } from "../services/rsvpService";
+    import {
+    saveRSVP,
+    removeRSVP,
+    fetchRSVPCounts,
+    fetchUserRSVP,
+    } from "../services/rsvpService";
 
     const EventDetails = () => {
     const { id } = useParams();
@@ -20,7 +30,7 @@
     const [counts, setCounts] = useState({ yes: 0, maybe: 0, no: 0 });
     const [rsvpLoading, setRsvpLoading] = useState(true);
 
-    // ✅ Private access (local “unlock”)
+    // Private unlock (local)
     const [accessGranted, setAccessGranted] = useState(false);
     const [codeInput, setCodeInput] = useState("");
     const [codeError, setCodeError] = useState("");
@@ -42,6 +52,34 @@
         load();
     }, [id]);
 
+    // HOST CHECK
+    const isHost = user?.uid && event?.userId && user.uid === event.userId;
+
+    // ✅ DELETE
+    const handleDelete = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this event?");
+        if (!confirmDelete) return;
+
+        try {
+        await deleteEvent(event.id);
+        navigate("/my-events");
+        } catch (err) {
+        console.error(err);
+        alert("Failed to delete event. Please try again.");
+        }
+    };
+
+    // ✅ FEATURE TOGGLE
+    const handleToggleFeatured = async () => {
+        try {
+        await setFeatured(event.id, !event.featured);
+        setEvent((prev) => ({ ...prev, featured: !prev.featured }));
+        } catch (e) {
+        console.error(e);
+        alert("Failed to update featured status.");
+        }
+    };
+
     // TIME FORMAT
     const formatTime = (time) => {
         if (!time) return "";
@@ -52,10 +90,7 @@
         return `${formattedHour}:${minute} ${suffix}`;
     };
 
-    // HOST CHECK
-    const isHost = user?.uid && event?.userId && user.uid === event.userId;
-
-    // ✅ check local unlock after event loads
+    // check local unlock after event loads
     useEffect(() => {
         if (!event?.id) return;
         const accessKey = `event-access-${event.id}`;
@@ -101,7 +136,7 @@
         );
     }
 
-    // ✅ PRIVATE LOCK SCREEN (before showing event details)
+    // PRIVATE LOCK SCREEN
     if (event.isPrivate && !isHost && !accessGranted) {
         const accessKey = `event-access-${event.id}`;
 
@@ -153,27 +188,15 @@
     const mapLink =
         event.mapUrl && event.mapUrl.trim() !== ""
         ? event.mapUrl
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location || "")}`;
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            event.location || ""
+            )}`;
 
     const timeDisplay = event.endTime
         ? `${formatTime(event.time)} – ${formatTime(event.endTime)}`
         : `${formatTime(event.time)}`;
 
     const eventUrl = `${window.location.origin}/event/${id}`;
-
-    // DELETE
-    const handleDelete = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this event?");
-        if (!confirmDelete) return;
-
-        try {
-        await deleteEvent(event.id);
-        navigate("/my-events");
-        } catch (err) {
-        console.error(err);
-        alert("Failed to delete event. Please try again.");
-        }
-    };
 
     // RSVP HANDLER (Firestore)
     const handleRSVP = async (choice) => {
@@ -206,10 +229,18 @@
             ← Back
         </button>
 
+        {/* HOST CONTROLS */}
         {isHost && (
             <div className="host-controls">
-            <button className="secondary-btn" onClick={() => navigate(`/edit-event/${event.id}`)}>
+            <button
+                className="secondary-btn"
+                onClick={() => navigate(`/edit-event/${event.id}`)}
+            >
                 Edit Event
+            </button>
+
+            <button className="secondary-btn" onClick={handleToggleFeatured}>
+                {event.featured ? "Unfeature" : "Feature"} Event
             </button>
 
             <button className="danger-btn" onClick={handleDelete}>
@@ -223,6 +254,7 @@
         <p className="event-meta">
             📅 {event.date} · ⏰ {timeDisplay}
             {event.isPrivate ? " · 🔒 Private" : ""}
+            {event.featured ? " · ⭐ Featured" : ""}
         </p>
 
         <p className="event-meta">📍 {event.location}</p>
@@ -246,15 +278,24 @@
             ) : (
             <>
                 <div className="rsvp-buttons">
-                <button className={`yes ${rsvp === "yes" ? "active" : ""}`} onClick={() => handleRSVP("yes")}>
+                <button
+                    className={`yes ${rsvp === "yes" ? "active" : ""}`}
+                    onClick={() => handleRSVP("yes")}
+                >
                     Yes
                 </button>
 
-                <button className={`maybe ${rsvp === "maybe" ? "active" : ""}`} onClick={() => handleRSVP("maybe")}>
+                <button
+                    className={`maybe ${rsvp === "maybe" ? "active" : ""}`}
+                    onClick={() => handleRSVP("maybe")}
+                >
                     Maybe
                 </button>
 
-                <button className={`no ${rsvp === "no" ? "active" : ""}`} onClick={() => handleRSVP("no")}>
+                <button
+                    className={`no ${rsvp === "no" ? "active" : ""}`}
+                    onClick={() => handleRSVP("no")}
+                >
                     No
                 </button>
                 </div>
@@ -289,7 +330,9 @@
             </button>
 
             <a
-                href={`https://wa.me/?text=${encodeURIComponent(`You're invited to ${event.title}! 🎉\n\n${eventUrl}`)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(
+                `You're invited to ${event.title}! 🎉\n\n${eventUrl}`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -297,7 +340,9 @@
             </a>
 
             <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`You're invited to ${event.title}! 🎉\n\n${eventUrl}`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                `You're invited to ${event.title}! 🎉\n\n${eventUrl}`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -305,13 +350,18 @@
             </a>
             </div>
 
-            {/* ✅ show code only to host */}
+            {/* show code only to host */}
             {isHost && event.isPrivate && (
             <p className="muted" style={{ marginTop: "10px" }}>
                 Invite Code: <strong>{event.inviteCode}</strong>
             </p>
             )}
         </div>
+
+        {/* ✅ RECOMMENDED (put it inside return like this) */}
+        <RecommendedEvents
+        currentEventId={event.id} category={event.category}
+        />
         </div>
     );
     };

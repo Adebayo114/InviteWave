@@ -2,7 +2,16 @@
     import { useLocation, useNavigate } from "react-router-dom";
     import { fetchEvents } from "../services/eventsService";
     import { Lock } from "lucide-react";
-    import "../Styles/noevents.css"; // ✅ use your explore css (create if you don't have)
+    import categories from "../utils/categories";
+    import "../Styles/noevents.css"; // or your Explore css
+
+    // ✅ slug -> Label helper using your categories list
+    const getCategoryLabel = (slug = "") => {
+    const found = categories.find(
+        (c) => (c.slug || "").toLowerCase() === (slug || "").toLowerCase()
+    );
+    return found ? found.name : slug;
+    };
 
     const Explore = () => {
     const navigate = useNavigate();
@@ -41,7 +50,7 @@
         load();
     }, []);
 
-    // filter locally based on search + category
+    // filter locally based on category + search
     const filteredEvents = useMemo(() => {
         let list = [...events];
 
@@ -62,7 +71,7 @@
         }
 
         return list;
-    }, [events, searchQuery, categoryQuery]);
+    }, [events, categoryQuery, searchQuery]);
 
     if (loading) {
         return (
@@ -80,7 +89,7 @@
 
             {categoryQuery && (
             <p className="muted">
-                Category: <strong>{categoryQuery}</strong>
+                Category: <strong>{getCategoryLabel(categoryQuery)}</strong>
             </p>
             )}
 
@@ -94,7 +103,10 @@
         {!filteredEvents.length ? (
             <div className="empty-state">
             <p>No events found.</p>
-            <button className="primary-btn" onClick={() => navigate("/create-event")}>
+            <button
+                className="primary-btn"
+                onClick={() => navigate("/create-event")}
+            >
                 Create an Event
             </button>
             </div>
@@ -114,10 +126,12 @@
                 <div className="event-card-top">
                     <h4 className="event-title">{event.title}</h4>
 
-                    {/* Pills row (category + lock badge) */}
+                    {/* Pills row */}
                     <div className="pill-row">
                     {event.category && (
-                        <span className={`pill ${event.category}`}>{event.category}</span>
+                        <span className={`pill ${event.category}`}>
+                        {getCategoryLabel(event.category)}
+                        </span>
                     )}
 
                     {event.isPrivate && (
@@ -147,7 +161,7 @@
                     navigate(`/event/${event.id}`);
                     }}
                 >
-                    View Details →
+                    {event.isPrivate ? "Enter Code →" : "View Details →"}
                 </button>
                 </div>
             ))}

@@ -63,3 +63,11 @@
     font-weight: 600;
     text-decoration: none;
     }
+
+
+        .event-img {
+    height: 160px;
+    background: #eaeaea;
+    background-size: cover;
+    background-position: center;
+    }

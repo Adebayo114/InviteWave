@@ -24,8 +24,8 @@
             a: "Guests can select Yes/Maybe/No. RSVP counts update in Firestore (global counts).",
         },
         {
-            q: "My link shows 404 on Vercel sometimes, why?",
-            a: "That happens when SPA routing isn’t configured. You already fixed it with Vercel rewrites.",
+            q: `Why does my InviteWave link sometimes show 404 on Vercel?`,
+            a: `InviteWave is a single-page app (SPA). If someone opens a deep link like /event/123 directly, Vercel may try to find a real folder/file called /event/123 and return 404.`,
         },
         ],
         []

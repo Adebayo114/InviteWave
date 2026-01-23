@@ -5,20 +5,45 @@
 
     const Signup = () => {
     const navigate = useNavigate();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        if (!email || !password) return;
+
+        const cleanEmail = email.trim();
+
+        if (!cleanEmail || !password) {
+        alert("Please enter email and password.");
+        return;
+        }
+
+        if (password.length < 6) {
+        alert("Password must be at least 6 characters.");
+        return;
+        }
 
         try {
         setLoading(true);
-        await signupEmail(email, password);
+        await signupEmail(cleanEmail, password);
         navigate("/my-events");
         } catch (err) {
         console.error(err);
+
+        if (err.code === "auth/email-already-in-use") {
+            alert("This email already has an account. Please login.");
+            navigate("/login");
+            return;
+        }
+
+        if (err.code === "auth/account-exists-with-different-credential") {
+            alert("This email exists. Try logging in with Google.");
+            navigate("/login");
+            return;
+        }
+
         alert(err.message || "Signup failed");
         } finally {
         setLoading(false);
@@ -32,6 +57,13 @@
         navigate("/my-events");
         } catch (err) {
         console.error(err);
+
+        if (err.code === "auth/account-exists-with-different-credential") {
+            alert("This email exists already. Try logging in with email/password.");
+            navigate("/login");
+            return;
+        }
+
         alert(err.message || "Google sign-in failed");
         } finally {
         setLoading(false);
@@ -60,15 +92,17 @@
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
             />
 
             <label className="auth-label">Password</label>
             <input
                 className="auth-input"
                 type="password"
-                placeholder="Create a password"
+                placeholder="Create a password (min 6 chars)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
             />
 
             <button className="auth-btn" type="submit" disabled={loading}>

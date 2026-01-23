@@ -1,0 +1,52 @@
+    .recommended-events {
+    margin-top: 3.5rem;
+    }
+
+    .recommended-events h3 {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    }
+
+    .recommended-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    }
+
+    .recommended-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    }
+
+    .recommended-img {
+    height: 140px;
+    background: #eee;
+    background-size: cover;
+    background-position: center;
+    }
+
+    .recommended-info {
+    padding: 1rem;
+    }
+
+    .recommended-title {
+    font-weight: 700;
+    margin: 0;
+    }
+
+    .recommended-pills {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+    }
+
+    .recommended-top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    }

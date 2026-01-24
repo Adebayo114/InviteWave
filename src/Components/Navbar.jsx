@@ -1,6 +1,8 @@
     import { Link, useNavigate } from "react-router-dom";
     import { logout } from "../services/authService";
     import { useAuth } from "../context/useAuth";
+    import { confirmLogout, toastSuccess, alertError } from "../utils/alert";
+
 
 
 
@@ -11,15 +13,20 @@
     const navigate = useNavigate();
     const { user, authLoading } = useAuth(); // ✅ Firebase user
 
-    const handleLogout = async () => {
+
+        const handleLogout = async () => {
+        const confirmed = await confirmLogout();
+        if (!confirmed) return;
+
         try {
-        await logout();
-        navigate("/login");
-        } catch (err) {
-        console.error(err);
-        alert("Logout failed. Try again.");
+            await logout();
+            toastSuccess("Logged out successfully");
+            navigate("/login");
+        } catch {
+            alertError("Logout failed", "Please try again.");
         }
-    };
+        };
+
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light shadow-sm px-3 py-2">

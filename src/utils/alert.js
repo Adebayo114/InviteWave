@@ -116,3 +116,19 @@
         timerProgressBar: true,
     });
     };
+
+
+    export const confirmLogout = async () => {
+    const result = await Swal.fire({
+        title: "Log out?",
+        text: "Are you sure you want to log out of your account?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, log out",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#aaa",
+    });
+
+    return result.isConfirmed;
+    };

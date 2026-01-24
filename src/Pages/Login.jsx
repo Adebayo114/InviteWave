@@ -1,30 +1,43 @@
     import { useState } from "react";
-    import { useNavigate, Link, useLocation } from "react-router-dom";
+    import { useNavigate, Link } from "react-router-dom";
     import { loginEmail, loginWithGoogle } from "../services/authService";
+    import { toastSuccess, alertError } from "../utils/alert";
     import "../Styles/Auth.css";
 
     const Login = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    // ✅ where user was trying to go before being forced to login
-    const from = location.state?.from || "/my-events";
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleEmailLogin = async (e) => {
         e.preventDefault();
-        if (!email || !password) return;
+        if (!email || !password) {
+        return alertError("Missing fields", "Please enter email and password.");
+        }
 
         try {
         setLoading(true);
         await loginEmail(email, password);
-        navigate(from, { replace: true }); // ✅ go back
+        toastSuccess("Welcome back 🎉");
+        navigate("/my-events");
         } catch (err) {
         console.error(err);
-        alert(err.message || "Login failed");
+
+        if (err.code === "auth/user-not-found") {
+            return alertError("No account found", "Please sign up first.");
+        }
+        if (err.code === "auth/wrong-password") {
+            return alertError("Wrong password", "Please try again.");
+        }
+        if (err.code === "auth/invalid-credential") {
+            return alertError("Invalid login", "Email or password is incorrect.");
+        }
+        if (err.code === "auth/invalid-email") {
+            return alertError("Invalid email", "Please enter a valid email address.");
+        }
+
+        alertError("Login failed", err.message || "Please try again.");
         } finally {
         setLoading(false);
         }
@@ -34,10 +47,11 @@
         try {
         setLoading(true);
         await loginWithGoogle();
-        navigate(from, { replace: true }); // ✅ go back
+        toastSuccess("Logged in with Google ✅");
+        navigate("/my-events");
         } catch (err) {
         console.error(err);
-        alert(err.message || "Google sign-in failed");
+        alertError("Google login failed", err.message || "Please try again.");
         } finally {
         setLoading(false);
         }
@@ -47,7 +61,7 @@
         <div className="auth-page">
         <div className="auth-card">
             <h2 className="auth-title">Welcome back</h2>
-            <p className="auth-subtitle">Login to continue</p>
+            <p className="auth-subtitle">Login to manage your events</p>
 
             <button className="auth-google" onClick={handleGoogle} disabled={loading}>
             Continue with Google

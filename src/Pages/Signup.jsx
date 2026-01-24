@@ -1,50 +1,43 @@
     import { useState } from "react";
     import { useNavigate, Link } from "react-router-dom";
     import { signupEmail, loginWithGoogle } from "../services/authService";
+    import { toastSuccess, alertError } from "../utils/alert";
     import "../Styles/Auth.css";
 
     const Signup = () => {
     const navigate = useNavigate();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleSignup = async (e) => {
         e.preventDefault();
-
-        const cleanEmail = email.trim();
-
-        if (!cleanEmail || !password) {
-        alert("Please enter email and password.");
-        return;
-        }
-
-        if (password.length < 6) {
-        alert("Password must be at least 6 characters.");
-        return;
+        if (!email || !password) {
+        return alertError("Missing fields", "Please enter email and password.");
         }
 
         try {
         setLoading(true);
-        await signupEmail(cleanEmail, password);
+        await signupEmail(email, password);
+        toastSuccess("Account created 🎉");
         navigate("/my-events");
         } catch (err) {
         console.error(err);
 
         if (err.code === "auth/email-already-in-use") {
-            alert("This email already has an account. Please login.");
-            navigate("/login");
-            return;
+            alertError("Email already in use", "Please login instead.");
+            return navigate("/login");
         }
 
-        if (err.code === "auth/account-exists-with-different-credential") {
-            alert("This email exists. Try logging in with Google.");
-            navigate("/login");
-            return;
+        if (err.code === "auth/weak-password") {
+            return alertError("Weak password", "Use at least 6 characters.");
         }
 
-        alert(err.message || "Signup failed");
+        if (err.code === "auth/invalid-email") {
+            return alertError("Invalid email", "Please enter a valid email address.");
+        }
+
+        alertError("Signup failed", err.message || "Please try again.");
         } finally {
         setLoading(false);
         }
@@ -54,17 +47,19 @@
         try {
         setLoading(true);
         await loginWithGoogle();
+        toastSuccess("Signed in with Google ✅");
         navigate("/my-events");
         } catch (err) {
         console.error(err);
 
         if (err.code === "auth/account-exists-with-different-credential") {
-            alert("This email exists already. Try logging in with email/password.");
-            navigate("/login");
-            return;
+            return alertError(
+            "Account exists",
+            "This email already exists. Try logging in with Email/Password."
+            );
         }
 
-        alert(err.message || "Google sign-in failed");
+        alertError("Google sign-in failed", err.message || "Please try again.");
         } finally {
         setLoading(false);
         }
@@ -92,17 +87,15 @@
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
             />
 
             <label className="auth-label">Password</label>
             <input
                 className="auth-input"
                 type="password"
-                placeholder="Create a password (min 6 chars)"
+                placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
             />
 
             <button className="auth-btn" type="submit" disabled={loading}>

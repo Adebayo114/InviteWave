@@ -5,10 +5,10 @@
     deleteEvent,
     setFeatured,
     } from "../services/eventsService";
+    import { alertConfirm, alertSuccess, toastSuccess, alertError, alertInfo } from "../utils/alert";
     import { useAuth } from "../context/useAuth";
     import "../Styles/EventDetails.css";
     import RecommendedEvents from "../Components/RecommendedEvents";
-
     import {
     saveRSVP,
     removeRSVP,
@@ -56,18 +56,26 @@
     const isHost = user?.uid && event?.userId && user.uid === event.userId;
 
     // ✅ DELETE
-    const handleDelete = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this event?");
-        if (!confirmDelete) return;
+
+            const handleDelete = async () => {
+            const ok = await alertConfirm({
+  title: "Delete this event?",
+  text: "This cannot be undone.",
+  confirmText: "Yes, delete",
+});
+
+if (!ok) return;
 
         try {
         await deleteEvent(event.id);
+        toastSuccess("Event deleted");
         navigate("/my-events");
         } catch (err) {
         console.error(err);
-        alert("Failed to delete event. Please try again.");
+        alertError("Delete failed", "Please try again.");
         }
-    };
+                    };
+
 
     // ✅ FEATURE TOGGLE
     const handleToggleFeatured = async () => {
@@ -75,8 +83,8 @@
         await setFeatured(event.id, !event.featured);
         setEvent((prev) => ({ ...prev, featured: !prev.featured }));
         } catch (e) {
-        console.error(e);
-        alert("Failed to update featured status.");
+        console.error(e); 
+        alertError("Failed to update featured status.");
         }
     };
 
@@ -167,12 +175,23 @@
                     const correct = (event.inviteCode || "").trim().toUpperCase();
                     const typed = codeInput.trim().toUpperCase();
 
-                    if (!typed) return setCodeError("Please enter the code.");
-                    if (typed !== correct) return setCodeError("Wrong code. Try again.");
+                    if (!typed) {
+                        setCodeError("Please enter the code.");
+                        return;
+                    }
+
+                    if (typed !== correct) {
+                        alertError("Invalid Code", "The invite code you entered is incorrect");
+                        return;
+                    }
+
+                    // ✅ SUCCESS ALERT GOES HERE
+                    alertSuccess("Access Granted 🎉", "You can now view this private event");
 
                     localStorage.setItem(accessKey, "true");
                     setAccessGranted(true);
-                }}
+                    }}
+
                 >
                 Unlock
                 </button>
@@ -201,8 +220,9 @@
     // RSVP HANDLER (Firestore)
     const handleRSVP = async (choice) => {
         if (!user?.uid) {
-        alert("Please login to RSVP.");
+        alertInfo("Login required", "Please login to RSVP for this event");
         navigate("/login");
+
         return;
         }
 
@@ -219,7 +239,7 @@
         setCounts(updatedCounts);
         } catch (err) {
         console.error(err);
-        alert("Failed to update RSVP. Try again.");
+        alertError("RSVP failed", "Please try again");
         }
     };
 
@@ -323,7 +343,7 @@
             <button
                 onClick={() => {
                 navigator.clipboard.writeText(eventUrl);
-                alert("Invite link copied!");
+                alertSuccess("Copied!", "Invite link copied to clipboard");
                 }}
             >
                 Copy Link

@@ -3,6 +3,7 @@
     import BackButton from "../Components/BackButton";
     import { createEvent } from "../services/eventsService";
     import { useAuth } from "../context/useAuth"; // adjust path if yours is different
+    import { alertError, toastSuccess } from "../utils/alert";
     import "../Styles/CreateEvents.css";
 
     const CreateEvents = () => {
@@ -37,21 +38,28 @@
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!user?.uid) {
-        alert("Please login to create an event.");
+            if (!user?.uid) {
+        alertError("Login required", "Please login to create an event.");
         navigate("/login");
         return;
         }
 
         if (!formData.title || !formData.category || !formData.location) {
-        alert("Please fill in required fields");
+        alertError(
+            "Missing information",
+            "Title, category, and location are required."
+        );
         return;
         }
 
         if (formData.time && formData.endTime && formData.endTime <= formData.time) {
-        alert("End time must be after start time");
+        alertError(
+            "Invalid time",
+            "End time must be later than the start time."
+        );
         return;
         }
+
 
         const finalInviteCode = formData.isPrivate
         ? (formData.inviteCode.trim() || generateCode())
@@ -79,11 +87,17 @@
             featured: false,
         });
 
-        navigate(`/event/${newId}`);
+        toastSuccess("Event created successfully 🎉");
+            navigate(`/event/${newId}`);
+
         } catch (err) {
-        console.error(err);
-        alert("Failed to create event. Please try again.");
-        }
+            console.error(err);
+            alertError(
+                "Event creation failed",
+                "Something went wrong. Please try again."
+            );
+}
+
     };
 
     return (

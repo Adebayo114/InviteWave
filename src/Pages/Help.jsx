@@ -82,12 +82,24 @@
                 <h3>Contact Support</h3>
                 <p>Email us and include a screenshot if possible.</p>
 
-                <a
-                    className="help-email"
-                    href="mailto:invitewavehq@gmail.com?subject=InviteWave%20Support"
-                >
-                    invitewavehq@gmail.com
-                </a>
+                <div className="help-contact">
+                    <a
+                        className="help-email"
+                        href="mailto:invitewavehq@gmail.com?subject=InviteWave%20Support&body=Hi%20InviteWave%20Support%2C%0A%0A"
+                    >
+                        📧 Email Support (Mail App)
+                    </a>
+
+                    <a
+                        className="help-email-alt"
+                        href="https://mail.google.com/mail/?view=cm&fs=1&to=invitewavehq@gmail.com&su=InviteWave%20Support&body=Hi%20InviteWave%20Support%2C%0A%0A"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Open in Gmail (Works for everyone)
+                    </a>
+                  </div>
+
 
                 <p className="help-note">
                     Response time: within 24–72 hours (depending on volume).

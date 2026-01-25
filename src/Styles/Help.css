@@ -138,3 +138,32 @@
   line-height: 1.5;
 }
  
+
+.help-contact{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:12px;
+}
+
+.help-email,
+.help-email-alt{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-decoration:none;
+  padding:12px 14px;
+  border-radius:12px;
+  font-weight:600;
+}
+
+.help-email{
+  background:#000;
+  color:#fff;
+}
+
+.help-email-alt{
+  background:#fff;
+  border:1px solid #ddd;
+  color:#111;
+}

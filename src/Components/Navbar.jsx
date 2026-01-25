@@ -1,32 +1,38 @@
-    import { Link, useNavigate } from "react-router-dom";
+    import { Link, useNavigate, useLocation } from "react-router-dom";
+    import { useEffect, useRef } from "react";
     import { logout } from "../services/authService";
     import { useAuth } from "../context/useAuth";
-    import { confirmLogout, toastSuccess, alertError } from "../utils/alert";
-
-
-
 
     import image from "../assets/Logo/logo1.png";
     import "../Styles/Navbar.css";
 
     const Navbar = () => {
     const navigate = useNavigate();
-    const { user, authLoading } = useAuth(); // ✅ Firebase user
+    const location = useLocation();
+    const { user, authLoading } = useAuth();
 
+    const collapseRef = useRef(null);
 
-        const handleLogout = async () => {
-        const confirmed = await confirmLogout();
-        if (!confirmed) return;
+    // ✅ Close navbar after navigation (mobile)
+    useEffect(() => {
+        const el = collapseRef.current;
+        if (!el) return;
 
-        try {
-            await logout();
-            toastSuccess("Logged out successfully");
-            navigate("/login");
-        } catch {
-            alertError("Logout failed", "Please try again.");
+        // Bootstrap attaches "show" class when open
+        if (el.classList.contains("show")) {
+        el.classList.remove("show");
         }
-        };
+    }, [location.pathname]);
 
+    const handleLogout = async () => {
+        try {
+        await logout();
+        navigate("/login");
+        } catch (err) {
+        console.error(err);
+        alert("Logout failed. Try again.");
+        }
+    };
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light shadow-sm px-3 py-2">
@@ -41,11 +47,15 @@
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
             >
             <span className="navbar-toggler-icon"></span>
             </button>
 
-            <div className="collapse navbar-collapse" id="navbarNav">
+            {/* ✅ attach ref here so we can close it */}
+            <div className="collapse navbar-collapse" id="navbarNav" ref={collapseRef}>
             <ul className="navbar-nav ms-auto align-items-center">
                 <li className="nav-item mx-2">
                 <Link className="nav-link" to="/">
@@ -56,6 +66,18 @@
                 <li className="nav-item mx-2">
                 <Link className="nav-link" to="/explore">
                     Explore
+                </Link>
+                </li>
+
+                <li className="nav-item mx-2">
+                <Link className="nav-link" to="/categories">
+                    Categories
+                </Link>
+                </li>
+
+                <li className="nav-item mx-2">
+                <Link className="nav-link" to="/about">
+                    About
                 </Link>
                 </li>
 
@@ -73,16 +95,20 @@
                         My Events
                     </Link>
                     </li>
+
+                    <li className="nav-item mx-2 d-flex align-items-center gap-2">
+                    <span className="small text-muted d-none d-lg-inline">
+                        {user.displayName || user.email}
+                    </span>
+
+                    <button className="btn btn-danger px-3 py-1" onClick={handleLogout}>
+                        Logout
+                    </button>
+                    </li>
                 </>
                 )}
 
-                <li className="nav-item mx-2">
-                <Link className="nav-link" to="/about">
-                    About
-                </Link>
-                </li>
-
-                {!authLoading && !user ? (
+                {!authLoading && !user && (
                 <>
                     <li className="nav-item mx-2">
                     <Link className="btn btn-outline-primary px-3 py-1" to="/login">
@@ -96,20 +122,7 @@
                     </Link>
                     </li>
                 </>
-                ) : null}
-
-                {!authLoading && user ? (
-                <li className="nav-item mx-2 d-flex align-items-center gap-2">
-                    {/* Optional: show name/email */}
-                    <span className="small text-muted d-none d-lg-inline">
-                    {user.displayName || user.email}
-                    </span>
-
-                    <button className="btn btn-danger px-3 py-1" onClick={handleLogout}>
-                    Logout
-                    </button>
-                </li>
-                ) : null}
+                )}
             </ul>
             </div>
         </div>

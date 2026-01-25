@@ -20,7 +20,7 @@
         setLoading(true);
         await loginEmail(email, password);
         toastSuccess("Welcome back 🎉");
-        navigate("/my-events");
+        navigate("/explore");
         } catch (err) {
         console.error(err);
 

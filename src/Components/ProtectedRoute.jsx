@@ -7,16 +7,7 @@
 
     if (authLoading) return <div className="container">Loading...</div>;
 
-    if (!user) {
-        // ✅ remember the page they tried to open
-        return (
-        <Navigate
-            to="/login"
-            replace
-            state={{ from: location.pathname + location.search }}
-        />
-        );
-    }
+    if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
 
     return children;
     };

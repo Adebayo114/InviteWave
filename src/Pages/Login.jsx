@@ -1,17 +1,23 @@
     import { useState } from "react";
-    import { useNavigate, Link } from "react-router-dom";
+    import { useNavigate, Link, useLocation } from "react-router-dom";
     import { loginEmail, loginWithGoogle } from "../services/authService";
     import { toastSuccess, alertError } from "../utils/alert";
     import "../Styles/Auth.css";
 
     const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // ✅ send user back to where they came from (invite link, protected page, etc.)
+    const from = location.state?.from?.pathname || "/explore";
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleEmailLogin = async (e) => {
         e.preventDefault();
+
         if (!email || !password) {
         return alertError("Missing fields", "Please enter email and password.");
         }
@@ -19,8 +25,9 @@
         try {
         setLoading(true);
         await loginEmail(email, password);
+
         toastSuccess("Welcome back 🎉");
-        navigate("/explore");
+        navigate(from, { replace: true }); // ✅ go back to the event/details page
         } catch (err) {
         console.error(err);
 
@@ -47,8 +54,9 @@
         try {
         setLoading(true);
         await loginWithGoogle();
+
         toastSuccess("Logged in with Google ✅");
-        navigate("/my-events");
+        navigate(from, { replace: true }); // ✅ go back to the event/details page
         } catch (err) {
         console.error(err);
         alertError("Google login failed", err.message || "Please try again.");

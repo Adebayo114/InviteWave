@@ -5,17 +5,27 @@
     deleteEvent,
     setFeatured,
     } from "../services/eventsService";
-    import { alertConfirm, alertSuccess, toastSuccess, alertError, alertInfo } from "../utils/alert";
+    import {
+    alertConfirm,
+    alertSuccess,
+    toastSuccess,
+    alertError,
+    alertInfo,
+    } from "../utils/alert";
     import { useAuth } from "../context/useAuth";
     import "../Styles/EventDetails.css";
     import RecommendedEvents from "../Components/RecommendedEvents";
+
     import {
     saveRSVP,
     removeRSVP,
     fetchRSVPCounts,
     fetchUserRSVP,
     } from "../services/rsvpService";
+
     import { countMyFeaturedEvents } from "../services/eventsService";
+
+    const FREE_FEATURED_LIMIT = 1; // ✅ change later
 
     const EventDetails = () => {
     const { id } = useParams();
@@ -26,20 +36,17 @@
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // RSVP (Firestore)
+    // RSVP
     const [rsvp, setRsvp] = useState(null);
     const [counts, setCounts] = useState({ yes: 0, maybe: 0, no: 0 });
     const [rsvpLoading, setRsvpLoading] = useState(true);
-
-    // FEATURE LIMIT
-    const FREE_FEATURED_LIMIT = 1; // ✅ change later
 
     // Private unlock (local)
     const [accessGranted, setAccessGranted] = useState(false);
     const [codeInput, setCodeInput] = useState("");
     const [codeError, setCodeError] = useState("");
 
-    // LOAD EVENT
+    // Load event
     useEffect(() => {
         const load = async () => {
         try {
@@ -56,65 +63,10 @@
         load();
     }, [id]);
 
-    // HOST CHECK
+    // Host check
     const isHost = user?.uid && event?.userId && user.uid === event.userId;
 
-    // ✅ DELETE
-
-            const handleDelete = async () => {
-            const ok = await alertConfirm({
-  title: "Delete this event?",
-  text: "This cannot be undone.",
-  confirmText: "Yes, delete",
-});
-
-if (!ok) return;
-
-        try {
-        await deleteEvent(event.id);
-        toastSuccess("Event deleted");
-        navigate("/my-events");
-        } catch (err) {
-        console.error(err);
-        alertError("Delete failed", "Please try again.");
-        }
-                    };
-
-
-    // ✅ FEATURE TOGGLE
- 
-
-    const handleToggleFeatured = async () => {
-    try {
-        // If user is trying to turn ON featured
-        if (!event.featured) {
-        const count = await countMyFeaturedEvents(user.uid);
-
-        // Allow first featured event only (free plan)
-        if (count >= FREE_FEATURED_LIMIT) {
-            return alertError(
-            "Pro Feature",
-            `Free plan allows only ${FREE_FEATURED_LIMIT} featured event. Upgrade to feature more.`
-            );
-        }
-        }
-
-        await setFeatured(event.id, !event.featured);
-        setEvent((prev) => ({ ...prev, featured: !prev.featured }));
-
-        if (!event.featured) {
-        alertSuccess("Featured!", "Your event is now featured.");
-        } else {
-        alertSuccess("Removed", "This event is no longer featured.");
-        }
-    } catch (e) {
-        console.error(e);
-        alertError("Error", "Failed to update featured status.");
-    }
-    };
-
-
-    // TIME FORMAT
+    // Time formatter
     const formatTime = (time) => {
         if (!time) return "";
         const [hour, minute] = time.split(":");
@@ -124,14 +76,27 @@ if (!ok) return;
         return `${formattedHour}:${minute} ${suffix}`;
     };
 
-    // check local unlock after event loads
+    const timeDisplay = event?.endTime
+        ? `${formatTime(event?.time)} – ${formatTime(event?.endTime)}`
+        : `${formatTime(event?.time)}`;
+
+    const mapLink =
+        event?.mapUrl && event?.mapUrl.trim() !== ""
+        ? event.mapUrl
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            event?.location || ""
+            )}`;
+
+    const eventUrl = `${window.location.origin}/event/${id}`;
+
+    // Check local unlock
     useEffect(() => {
         if (!event?.id) return;
         const accessKey = `event-access-${event.id}`;
         setAccessGranted(localStorage.getItem(accessKey) === "true");
     }, [event?.id]);
 
-    // LOAD RSVP (Firestore) when event+user ready
+    // Load RSVP
     useEffect(() => {
         const loadRSVP = async () => {
         if (!event?.id) return;
@@ -158,7 +123,86 @@ if (!ok) return;
         loadRSVP();
     }, [event?.id, user?.uid]);
 
-    // UI STATES
+    // Delete
+    const handleDelete = async () => {
+        const ok = await alertConfirm({
+        title: "Delete this event?",
+        text: "This cannot be undone.",
+        confirmText: "Yes, delete",
+        });
+
+        if (!ok) return;
+
+        try {
+        await deleteEvent(event.id);
+        toastSuccess("Event deleted");
+        navigate("/my-events");
+        } catch (err) {
+        console.error(err);
+        alertError("Delete failed", "Please try again.");
+        }
+    };
+
+    // Toggle featured (with limit)
+    const handleToggleFeatured = async () => {
+        try {
+        if (!user?.uid) {
+            return alertInfo("Login required", "Please login to manage featured events.");
+        }
+
+        // turning ON featured
+        if (!event.featured) {
+            const count = await countMyFeaturedEvents(user.uid);
+
+            if (count >= FREE_FEATURED_LIMIT) {
+            return alertError(
+                "Pro Feature",
+                `Free plan allows only ${FREE_FEATURED_LIMIT} featured event. Upgrade to feature more.`
+            );
+            }
+        }
+
+        await setFeatured(event.id, !event.featured);
+        setEvent((prev) => ({ ...prev, featured: !prev.featured }));
+
+        if (!event.featured) {
+            alertSuccess("Featured!", "Your event is now featured.");
+        } else {
+            alertSuccess("Removed", "This event is no longer featured.");
+        }
+        } catch (e) {
+        console.error(e);
+        alertError("Error", "Failed to update featured status.");
+        }
+    };
+
+    // RSVP handler
+    const handleRSVP = async (choice) => {
+        if (!user?.uid) {
+        alertInfo("Login required", "Please login to RSVP for this event");
+        // optional: send them back to this event after login (better UX)
+        navigate(`/login?redirect=/event/${event.id}`);
+        return;
+        }
+
+        try {
+        if (rsvp === choice) {
+            await removeRSVP(event.id, user.uid);
+            setRsvp(null);
+        } else {
+            await saveRSVP(event.id, user.uid, choice);
+            setRsvp(choice);
+        }
+
+        const updatedCounts = await fetchRSVPCounts(event.id);
+        setCounts(updatedCounts);
+        } catch (err) {
+        console.error(err);
+        alertError("RSVP failed", "Please try again");
+        }
+    };
+
+    // UI states
     if (loading) return <div className="container">Loading...</div>;
 
     if (!event) {
@@ -170,7 +214,7 @@ if (!ok) return;
         );
     }
 
-    // PRIVATE LOCK SCREEN
+    // Private lock screen
     if (event.isPrivate && !isHost && !accessGranted) {
         const accessKey = `event-access-${event.id}`;
 
@@ -179,8 +223,6 @@ if (!ok) return;
             <button className="back-btn" onClick={() => navigate(-1)}>
             ← Back
             </button>
-
-            
 
             <div className="private-lock">
             <h2>🔒 Private Event</h2>
@@ -204,22 +246,19 @@ if (!ok) return;
                     const typed = codeInput.trim().toUpperCase();
 
                     if (!typed) {
-                        setCodeError("Please enter the code.");
-                        return;
+                    setCodeError("Please enter the code.");
+                    return;
                     }
 
                     if (typed !== correct) {
-                        alertError("Invalid Code", "The invite code you entered is incorrect");
-                        return;
+                    alertError("Invalid Code", "The invite code you entered is incorrect");
+                    return;
                     }
 
-                    // ✅ SUCCESS ALERT GOES HERE
                     alertSuccess("Access Granted 🎉", "You can now view this private event");
-
                     localStorage.setItem(accessKey, "true");
                     setAccessGranted(true);
-                    }}
-
+                }}
                 >
                 Unlock
                 </button>
@@ -231,46 +270,7 @@ if (!ok) return;
         );
     }
 
-    // MAP + TIME
-    const mapLink =
-        event.mapUrl && event.mapUrl.trim() !== ""
-        ? event.mapUrl
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-            event.location || ""
-            )}`;
-
-    const timeDisplay = event.endTime
-        ? `${formatTime(event.time)} – ${formatTime(event.endTime)}`
-        : `${formatTime(event.time)}`;
-
-    const eventUrl = `${window.location.origin}/event/${id}`;
-
-    // RSVP HANDLER (Firestore)
-    const handleRSVP = async (choice) => {
-        if (!user?.uid) {
-        alertInfo("Login required", "Please login to RSVP for this event");
-        navigate("/login");
-
-        return;
-        }
-
-        try {
-        if (rsvp === choice) {
-            await removeRSVP(event.id, user.uid);
-            setRsvp(null);
-        } else {
-            await saveRSVP(event.id, user.uid, choice);
-            setRsvp(choice);
-        }
-
-        const updatedCounts = await fetchRSVPCounts(event.id);
-        setCounts(updatedCounts);
-        } catch (err) {
-        console.error(err);
-        alertError("RSVP failed", "Please try again");
-        }
-    };
-
+    // ✅ Main page
     return (
         <div className="container event-details">
         <button className="back-btn" onClick={() => navigate(-1)}>
@@ -280,10 +280,7 @@ if (!ok) return;
         {/* HOST CONTROLS */}
         {isHost && (
             <div className="host-controls">
-            <button
-                className="secondary-btn"
-                onClick={() => navigate(`/edit-event/${event.id}`)}
-            >
+            <button className="secondary-btn" onClick={() => navigate(`/edit-event/${event.id}`)}>
                 Edit Event
             </button>
 
@@ -297,25 +294,26 @@ if (!ok) return;
             </div>
         )}
 
-    `                    {/* UPGRADE CTA */}
-            <div className="upgrade-wrap">
+        {/* UPGRADE CTA (NO BACKTICKS!) */}
+        <div className="upgrade-wrap">
             <button
-                className="upgrade-btn"
-                onClick={() =>
+            className="upgrade-btn"
+            onClick={() =>
                 alertInfo(
-                    "InviteWave Pro (Coming Soon)",
-                    "Pro will unlock more featured events, advanced privacy, analytics, and custom branding."
+                "InviteWave Pro (Coming Soon)",
+                "Pro will unlock more featured events, advanced privacy, analytics, and custom branding."
                 )
-                }
+            }
             >
-                Upgrade to Pro
+            Upgrade to Pro
             </button>
-            </div>`
+        </div>
 
+        {/* HEADER / META */}
         <h1>{event.title}</h1>
 
         <p className="event-meta">
-            📅 {event.date} · ⏰ {timeDisplay}
+            📅 {event.date || "TBD"} · ⏰ {timeDisplay || "TBD"}
             {event.isPrivate ? " · 🔒 Private" : ""}
             {event.featured ? " · ⭐ Featured" : ""}
         </p>
@@ -326,11 +324,22 @@ if (!ok) return;
             Hosted by <strong>{event.host}</strong>
         </p>
 
-        <p className="event-description">{event.description}</p>
+        {event.description && <p className="event-description">{event.description}</p>}
 
-        <a href={mapLink} target="_blank" rel="noopener noreferrer" className="map-btn">
-            📍 Open in Google Maps
-        </a>
+                <a
+            href={mapLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="map-link"
+            >
+            <span className="map-icon">📍</span>
+            <span className="map-text">
+                Open location in Google Maps
+                <span className="map-subtext">{event.location || "View location"}</span>
+            </span>
+            <span className="map-arrow">↗</span>
+            </a>
+
 
         {/* RSVP */}
         <div className="rsvp-section">
@@ -341,24 +350,15 @@ if (!ok) return;
             ) : (
             <>
                 <div className="rsvp-buttons">
-                <button
-                    className={`yes ${rsvp === "yes" ? "active" : ""}`}
-                    onClick={() => handleRSVP("yes")}
-                >
+                <button className={`yes ${rsvp === "yes" ? "active" : ""}`} onClick={() => handleRSVP("yes")}>
                     Yes
                 </button>
 
-                <button
-                    className={`maybe ${rsvp === "maybe" ? "active" : ""}`}
-                    onClick={() => handleRSVP("maybe")}
-                >
+                <button className={`maybe ${rsvp === "maybe" ? "active" : ""}`} onClick={() => handleRSVP("maybe")}>
                     Maybe
                 </button>
 
-                <button
-                    className={`no ${rsvp === "no" ? "active" : ""}`}
-                    onClick={() => handleRSVP("no")}
-                >
+                <button className={`no ${rsvp === "no" ? "active" : ""}`} onClick={() => handleRSVP("no")}>
                     No
                 </button>
                 </div>
@@ -413,7 +413,6 @@ if (!ok) return;
             </a>
             </div>
 
-            {/* show code only to host */}
             {isHost && event.isPrivate && (
             <p className="muted" style={{ marginTop: "10px" }}>
                 Invite Code: <strong>{event.inviteCode}</strong>
@@ -421,10 +420,8 @@ if (!ok) return;
             )}
         </div>
 
-        {/* ✅ RECOMMENDED (put it inside return like this) */}
-        <RecommendedEvents
-        currentEventId={event.id} category={event.category}
-        />
+        {/* ✅ Recommended shows BELOW Invite section */}
+        <RecommendedEvents currentEventId={event.id} category={event.category} />
         </div>
     );
     };

@@ -7,6 +7,7 @@
     import HowItWorks from "../Components/HowItWorks";
     import FeaturedEvents from "../Components/FeaturedEvents";
     import ExploreCTA from "../Components/ExploreCTA";
+    import { alertInfo } from "../utils/alert";
 
     import "../Styles/HomeSb.css";
 
@@ -44,6 +45,22 @@
 
         {/* FEATURED EVENTS */}
         <FeaturedEvents />
+
+                {/* UPGRADE CTA */}
+    <div className="upgrade-wrap">
+    <button
+        className="upgrade-btn"
+        onClick={() =>
+        alertInfo(
+            "InviteWave Pro (Coming Soon)",
+            "Pro will unlock more featured events, advanced privacy, analytics, and custom branding."
+        )
+        }
+    >
+        Upgrade to Pro
+    </button>
+    </div>
+
 
         {/* CTA */}
         <ExploreCTA />

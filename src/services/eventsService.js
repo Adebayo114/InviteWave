@@ -11,7 +11,9 @@
         orderBy,
         limit,
         serverTimestamp,
+        getCountFromServer,
         } from "firebase/firestore";
+        
         import { db } from "../firebase/firebase";
 
         const eventsRef = collection(db, "events");
@@ -120,3 +122,17 @@
 
         return data;
         };
+
+       
+
+// COUNT FEATURED EVENTS FOR A USER
+export const countMyFeaturedEvents = async (userId) => {
+  const q = query(
+    eventsRef,
+    where("userId", "==", userId),
+    where("featured", "==", true)
+  );
+
+  const snap = await getCountFromServer(q);
+  return snap.data().count || 0;
+};

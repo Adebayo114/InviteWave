@@ -15,3 +15,10 @@ body {
 .app-content {
   flex: 1;
 }
+
+
+.pro-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 8px;
+}

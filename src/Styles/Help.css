@@ -97,3 +97,44 @@
         grid-template-columns: 1fr;
     }
     }
+
+
+        /* UPGRADE BUTTON */
+    .upgrade-btn {
+    background: linear-gradient(135deg, #000, #222);
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .upgrade-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+    }
+    .upgrade-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+    }
+
+    .help-guidelines {
+  margin-top: 2rem;
+  padding: 1.2rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.guidelines-list {
+  margin-top: 0.8rem;
+  padding-left: 1.2rem;
+}
+
+.guidelines-list li {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+}
+ 

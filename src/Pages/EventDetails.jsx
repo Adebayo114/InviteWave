@@ -15,6 +15,7 @@
     fetchRSVPCounts,
     fetchUserRSVP,
     } from "../services/rsvpService";
+    import { countMyFeaturedEvents } from "../services/eventsService";
 
     const EventDetails = () => {
     const { id } = useParams();
@@ -29,6 +30,9 @@
     const [rsvp, setRsvp] = useState(null);
     const [counts, setCounts] = useState({ yes: 0, maybe: 0, no: 0 });
     const [rsvpLoading, setRsvpLoading] = useState(true);
+
+    // FEATURE LIMIT
+    const FREE_FEATURED_LIMIT = 1; // ✅ change later
 
     // Private unlock (local)
     const [accessGranted, setAccessGranted] = useState(false);
@@ -78,15 +82,37 @@ if (!ok) return;
 
 
     // ✅ FEATURE TOGGLE
+ 
+
     const handleToggleFeatured = async () => {
-        try {
+    try {
+        // If user is trying to turn ON featured
+        if (!event.featured) {
+        const count = await countMyFeaturedEvents(user.uid);
+
+        // Allow first featured event only (free plan)
+        if (count >= FREE_FEATURED_LIMIT) {
+            return alertError(
+            "Pro Feature",
+            `Free plan allows only ${FREE_FEATURED_LIMIT} featured event. Upgrade to feature more.`
+            );
+        }
+        }
+
         await setFeatured(event.id, !event.featured);
         setEvent((prev) => ({ ...prev, featured: !prev.featured }));
-        } catch (e) {
-        console.error(e); 
-        alertError("Failed to update featured status.");
+
+        if (!event.featured) {
+        alertSuccess("Featured!", "Your event is now featured.");
+        } else {
+        alertSuccess("Removed", "This event is no longer featured.");
         }
+    } catch (e) {
+        console.error(e);
+        alertError("Error", "Failed to update featured status.");
+    }
     };
+
 
     // TIME FORMAT
     const formatTime = (time) => {
@@ -153,6 +179,8 @@ if (!ok) return;
             <button className="back-btn" onClick={() => navigate(-1)}>
             ← Back
             </button>
+
+            
 
             <div className="private-lock">
             <h2>🔒 Private Event</h2>
@@ -268,6 +296,21 @@ if (!ok) return;
             </button>
             </div>
         )}
+
+    `                    {/* UPGRADE CTA */}
+            <div className="upgrade-wrap">
+            <button
+                className="upgrade-btn"
+                onClick={() =>
+                alertInfo(
+                    "InviteWave Pro (Coming Soon)",
+                    "Pro will unlock more featured events, advanced privacy, analytics, and custom branding."
+                )
+                }
+            >
+                Upgrade to Pro
+            </button>
+            </div>`
 
         <h1>{event.title}</h1>
 

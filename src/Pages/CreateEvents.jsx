@@ -83,6 +83,8 @@
             // ✅ privacy fields
             isPrivate: formData.isPrivate,
             inviteCode: finalInviteCode,
+            advancedPrivacy: false,
+
 
             featured: false,
         });
@@ -187,6 +189,27 @@
                 />
             )}
             </div>
+
+            <div className="privacy-row">
+  {/* your existing private checkbox */}
+
+    <label className="privacy-check" style={{ marginTop: "10px" }}>
+        <input
+        type="checkbox"
+        checked={formData.advancedPrivacy}
+        onChange={() =>
+            alertError(
+            "Pro Feature",
+            "Advanced privacy includes expiring codes, guest limits, and extra protection. Upgrade to Pro to enable it."
+            )
+        }
+        />
+        <span>
+        Advanced Privacy <span className="pro-badge">PRO</span>
+        </span>
+    </label>
+    </div>
+
 
             <textarea
             name="description"

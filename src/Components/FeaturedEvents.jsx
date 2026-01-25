@@ -8,6 +8,8 @@
 
     const [featuredEvents, setFeaturedEvents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const FREE_FEATURED_LIMIT = 1;
+
     const categoryImages = {
     birthday:
         "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=60",
@@ -56,6 +58,10 @@
         return (
         <section className="featured-events">
             <h3>Featured Events</h3>
+        <p className="muted" style={{ textAlign: "center" }}>
+                    Free plan: up to {FREE_FEATURED_LIMIT} featured event. <strong>Pro</strong> unlocks more.
+        </p>
+
             <p style={{ textAlign: "center" }} className="muted">
             Loading featured events...
             </p>

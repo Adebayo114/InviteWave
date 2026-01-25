@@ -39,7 +39,6 @@
         <div className="container">
             <Link className="navbar-brand d-flex align-items-center fw-bold fs-4" to="/">
             <img src={image} alt="InviteWave logo" className="navbar-logo" />
-            <span className="ms-2">InviteWave</span>
             </Link>
 
             <button

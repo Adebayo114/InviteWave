@@ -1,5 +1,6 @@
     import "../Styles/Footer.css";
     import { Link } from "react-router-dom";
+    import image from "../assets/Logo/logo1.png";
     import { Instagram, Twitter, Facebook } from "lucide-react";
 
     const Footer = () => {
@@ -9,7 +10,7 @@
 
             {/* Brand */}
             <div className="footer-section">
-            <h3 className="footer-logo">InviteWave</h3>
+            <img src={image} alt="InviteWave logo" className="navbar-logo" />
             <p className="footer-desc">
                 Create, share, and discover amazing events around you.
             </p>

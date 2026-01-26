@@ -5,7 +5,7 @@
 
     import image from "../assets/Logo/logo1.png";
     import "../Styles/Navbar.css";
-
+    import { alertConfirm, toastSuccess } from "../utils/alert";
     const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,15 +24,19 @@
         }
     }, [location.pathname]);
 
-    const handleLogout = async () => {
-        try {
+        const handleLogout = async () => {
+        const ok = await alertConfirm({
+            title: "Log out?",
+            text: "You’ll need to log in again to manage your events.",
+            confirmText: "Yes, log out",
+        });
+
+        if (!ok) return;
+
         await logout();
+        toastSuccess("Logged out successfully 👋");
         navigate("/login");
-        } catch (err) {
-        console.error(err);
-        alert("Logout failed. Try again.");
-        }
-    };
+        };
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light shadow-sm px-3 py-2">

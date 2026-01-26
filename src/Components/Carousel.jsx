@@ -1,8 +1,8 @@
     // components/Carousel.jsx
     import React from "react";
-    import slide1 from "../assets/Cimages/Cimage1.jpg";
-    import slide2 from "../assets/Cimages/Cimage2.jpg"; 
-    import slide3 from "../assets/Cimages/Cimage3.jpg";
+    import slide1 from "../assets/Cimages/Cimage1.webp";
+    import slide2 from "../assets/Cimages/Cimage2.webp"; 
+    import slide3 from "../assets/Cimages/Cimage3.webp";
     import { Link } from "react-router-dom";
     import "../Styles/Carousel.css";
 
@@ -60,9 +60,9 @@
             <div className="carousel-overlay">
                 <h1>One Link. One Invite.</h1>
                 <p>Share your event with ease</p>
-                <button className="btn btn-primary">
+                <Link to="/create-event"><button className="btn btn-primary">
                 Get Started
-                </button>
+                </button></Link>
             </div>
             </div>
 

@@ -10,7 +10,7 @@
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
     apiKey: "AIzaSyC8Rxa036Pgf_jacR3z2TkbBmHnZ7NWuRY",
-    authDomain: "invitewave-75431.firebaseapp.com",
+    authDomain: "invitewave.events",
     projectId: "invitewave-75431",
     storageBucket: "invitewave-75431.firebasestorage.app",
     messagingSenderId: "599782109764",

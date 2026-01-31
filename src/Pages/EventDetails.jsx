@@ -80,14 +80,21 @@
         ? `${formatTime(event?.time)} – ${formatTime(event?.endTime)}`
         : `${formatTime(event?.time)}`;
 
+        const isOnlineEvent =
+    (event?.location || "").toLowerCase().includes("online") ||
+    (event?.location || "").toLowerCase().includes("virtual");
+
     const mapLink =
-        event?.mapUrl && event?.mapUrl.trim() !== ""
+    !isOnlineEvent && event?.mapUrl && event.mapUrl.trim() !== ""
         ? event.mapUrl
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-            event?.location || ""
-            )}`;
+        : !isOnlineEvent && (event?.location || "").trim() !== ""
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            event.location
+        )}`
+        : null;
 
     const eventUrl = `${window.location.origin}/event/${id}`;
+
 
     // Check local unlock
     useEffect(() => {
@@ -326,19 +333,24 @@
 
         {event.description && <p className="event-description">{event.description}</p>}
 
-                <a
+                    {mapLink && (
+        <a
             href={mapLink}
             target="_blank"
             rel="noopener noreferrer"
             className="map-link"
-            >
+        >
             <span className="map-icon">📍</span>
             <span className="map-text">
-                Open location in Google Maps
-                <span className="map-subtext">{event.location || "View location"}</span>
+            Open location in Google Maps
+            <span className="map-subtext">{event.location || "View location"}</span>
             </span>
             <span className="map-arrow">↗</span>
-            </a>
+        </a>
+        )}
+
+
+
 
 
         {/* RSVP */}
@@ -379,46 +391,48 @@
         </div>
 
         {/* INVITE */}
+        {/* INVITE */}
         <div className="invite-section">
-            <h3>Invite others</h3>
+        <h3>Invite others</h3>
 
-            <div className="invite-actions">
+        <div className="invite-actions">
             <button
-                onClick={() => {
+            onClick={() => {
                 navigator.clipboard.writeText(eventUrl);
                 alertSuccess("Copied!", "Invite link copied to clipboard");
-                }}
+            }}
             >
-                Copy Link
+            Copy Link
             </button>
 
             <a
-                href={`https://wa.me/?text=${encodeURIComponent(
-                `You're invited to ${event.title}! 🎉\n\n${eventUrl}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
+            href={`https://wa.me/?text=${encodeURIComponent(
+                `Check out this event on InviteWave: ${event.title} 🎉\n\n${eventUrl}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
             >
-                Share on WhatsApp
+            Share on WhatsApp
             </a>
 
             <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                `You're invited to ${event.title}! 🎉\n\n${eventUrl}`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                `Check out this event on InviteWave: ${event.title} 🎉\n\n${eventUrl}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
             >
-                Share on X
+            Share on X
             </a>
-            </div>
-
-            {isHost && event.isPrivate && (
-            <p className="muted" style={{ marginTop: "10px" }}>
-                Invite Code: <strong>{event.inviteCode}</strong>
-            </p>
-            )}
         </div>
+
+        {isHost && event.isPrivate && (
+            <p className="muted" style={{ marginTop: "10px" }}>
+            Invite Code: <strong>{event.inviteCode}</strong>
+            </p>
+        )}
+        </div>
+
 
         {/* ✅ Recommended shows BELOW Invite section */}
         <RecommendedEvents currentEventId={event.id} category={event.category} />

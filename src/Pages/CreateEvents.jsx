@@ -72,6 +72,27 @@
             eventDateTime.getTime() + AUTO_EXPIRE_DAYS * 24 * 60 * 60 * 1000
         );
 
+        // ===== TEST MODE: expire in 1 minute =====
+        // const TEST_EXPIRE_NOW = true;
+
+        // let expiresAtDate = null;
+
+        // if (TEST_EXPIRE_NOW) {
+        //     expiresAtDate = new Date(Date.now() + 60 * 1000); // 1 minute from now
+        // } else {
+        //     // Normal production logic
+        //     const safeTime = formData.time || "12:00";
+        //     const [hh, mm] = safeTime.split(":").map(Number);
+        //     const [yyyy, mo, dd] = formData.date.split("-").map(Number);
+
+        //     const eventDateTime = new Date(yyyy, mo - 1, dd, hh, mm, 0);
+
+        //     expiresAtDate = new Date(
+        //         eventDateTime.getTime() + AUTO_EXPIRE_DAYS * 24 * 60 * 60 * 1000
+        //     );
+        // }
+
+
         try {
             const newId = await createEvent({
             title: formData.title.trim(),

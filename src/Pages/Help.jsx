@@ -32,6 +32,10 @@
                 q: "Why does my InviteWave link sometimes show 404 on Vercel?",
                 a: "InviteWave is a single-page app (SPA). If someone opens a deep link like /event/123 directly, Vercel may look for a real folder/file and show 404. This is fixed by adding a rewrite so all routes load the app.",
             },
+            {
+                q: "Why did my event disappear?",
+                a: "InviteWave automatically hides expired events. By default, events disappear a few days after the event date/time.",
+            },
             ],
             []
         );

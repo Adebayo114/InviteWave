@@ -3,21 +3,75 @@
 <head>
   <meta charset="UTF-8" />
 
-  <!-- Favicons -->
+  <!-- Mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>InviteWave — Discover & Share Events Near You</title>
+  <meta
+    name="description"
+    content="InviteWave helps you discover amazing local events, create your own events, and connect with your community. Explore what's happening near you today!"
+  />
+  <meta name="keywords" content="events, local events, event platform, discover events, create events, invitewave" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Canonical URL (prevents duplicate indexing issues) -->
+  <link rel="canonical" href="https://invitewave.events/" />
+
+  <!-- Favicon setup -->
   <link rel="icon" type="image/png" sizes="16x16" href="/logo2.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/logo2.png" />
-
-  <!-- Apple touch icon (big on mobile) -->
   <link rel="apple-touch-icon" sizes="180x180" href="/logo2.png" />
-  <!-- Android -->
   <link rel="icon" type="image/png" sizes="192x192" href="/logo2.png" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InviteWave</title>
+  <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+  <meta property="og:title" content="InviteWave — Discover Events Near You" />
+  <meta property="og:description" content="Find, share, and create exciting events happening around you." />
+  <meta property="og:image" content="https://invitewave.events/logo2.png" />
+  <meta property="og:url" content="https://invitewave.events/" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="InviteWave — Discover Events Near You" />
+  <meta name="twitter:description" content="Find, share, and create exciting events happening around you." />
+  <meta name="twitter:image" content="https://invitewave.events/logo2.png" />
+
+  <!-- Theme color (mobile browser color) -->
+  <meta name="theme-color" content="#0f172a" />
+
+  <!-- Structured Data: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "InviteWave",
+    "url": "https://invitewave.events",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://invitewave.events/explore?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "InviteWave",
+    "url": "https://invitewave.events",
+    "logo": "https://invitewave.events/logo2.png"
+  }
+  </script>
+
+  <!-- Performance hint (optional; remove if you don't use Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 </head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>

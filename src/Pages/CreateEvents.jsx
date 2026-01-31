@@ -3,7 +3,8 @@
     import BackButton from "../Components/BackButton";
     import { createEvent } from "../services/eventsService";
     import { useAuth } from "../context/useAuth"; // adjust path if yours is different
-    import { alertError, toastSuccess } from "../utils/alert";
+    import { alertError, toastSuccess, alertInfo } from "../utils/alert";
+    import { Timestamp } from "firebase/firestore"; // ✅ add this at top
     import "../Styles/CreateEvents.css";
 
     const CreateEvents = () => {
@@ -35,38 +36,44 @@
     const generateCode = () =>
         Math.random().toString(36).slice(2, 8).toUpperCase(); // e.g. "8KD2QA"
 
-    const handleSubmit = async (e) => {
+            const AUTO_EXPIRE_DAYS = 2
+            ;
+
+        const handleSubmit = async (e) => {
         e.preventDefault();
 
-            if (!user?.uid) {
-        alertError("Login required", "Please login to create an event.");
-        navigate("/login");
-        return;
+        if (!user?.uid) {
+            alertInfo("Login required", "Please login to create an event.");
+            navigate("/login");
+            return;
         }
 
-        if (!formData.title || !formData.category || !formData.location) {
-        alertError(
-            "Missing information",
-            "Title, category, and location are required."
-        );
-        return;
+        if (!formData.title || !formData.category || !formData.location || !formData.date) {
+            alertError("Missing fields", "Please fill in title, category, location, and date.");
+            return;
         }
 
         if (formData.time && formData.endTime && formData.endTime <= formData.time) {
-        alertError(
-            "Invalid time",
-            "End time must be later than the start time."
-        );
-        return;
+            alertError("Invalid time", "End time must be after start time.");
+            return;
         }
 
-
         const finalInviteCode = formData.isPrivate
-        ? (formData.inviteCode.trim() || generateCode())
-        : "";
+            ? (formData.inviteCode.trim() || generateCode())
+            : "";
+
+        // ✅ Safari-safe date build
+        const safeTime = formData.time || "12:00";
+        const [hh, mm] = safeTime.split(":").map(Number);
+        const [yyyy, mo, dd] = formData.date.split("-").map(Number);
+        const eventDateTime = new Date(yyyy, mo - 1, dd, hh, mm, 0);
+
+        const expiresAtDate = new Date(
+            eventDateTime.getTime() + AUTO_EXPIRE_DAYS * 24 * 60 * 60 * 1000
+        );
 
         try {
-        const newId = await createEvent({
+            const newId = await createEvent({
             title: formData.title.trim(),
             category: formData.category,
             location: formData.location.trim(),
@@ -76,31 +83,26 @@
             endTime: formData.endTime,
             description: formData.description.trim(),
 
-            // ✅ store owner
             userId: user.uid,
             host: user.displayName || user.email || "Host",
 
-            // ✅ privacy fields
             isPrivate: formData.isPrivate,
             inviteCode: finalInviteCode,
-            advancedPrivacy: false,
-
 
             featured: false,
-        });
 
-        toastSuccess("Event created successfully 🎉");
+            autoExpireDays: AUTO_EXPIRE_DAYS,
+            expiresAt: Timestamp.fromDate(expiresAtDate),
+            });
+
+            toastSuccess("Event created 🎉");
             navigate(`/event/${newId}`);
-
         } catch (err) {
             console.error(err);
-            alertError(
-                "Event creation failed",
-                "Something went wrong. Please try again."
-            );
-}
+            alertError("Create failed", "Failed to create event. Please try again.");
+        }
+        };
 
-    };
 
     return (
         <div className="container create-event">

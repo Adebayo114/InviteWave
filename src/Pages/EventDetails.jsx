@@ -328,11 +328,10 @@
 
         <p className="event-meta">📍 {event.location}</p>
 
-            <p className="event-host">
-        Hosted by <strong>{event.host || "InviteWave HQ"}</strong>
+        <p className="event-host">
+            Hosted by <strong>{event.host}</strong>
         </p>
-
-        {event.sourceUrl && (
+        {/* {event.sourceUrl && (
         <p className="event-source">
             Source:{" "}
             <a href={event.sourceUrl} target="_blank" rel="noopener noreferrer">
@@ -340,8 +339,7 @@
             </a>
         </p>
         )}
-        {/* DESCRIPTION & MAP */}
-
+        DESCRIPTION & MAP */}
         {event.description && <p className="event-description">{event.description}</p>}
 
                     {mapLink && (

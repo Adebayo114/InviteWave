@@ -328,9 +328,19 @@
 
         <p className="event-meta">📍 {event.location}</p>
 
-        <p className="event-host">
-            Hosted by <strong>{event.host}</strong>
+            <p className="event-host">
+        Hosted by <strong>{event.host || "InviteWave HQ"}</strong>
         </p>
+
+        {event.sourceUrl && (
+        <p className="event-source">
+            Source:{" "}
+            <a href={event.sourceUrl} target="_blank" rel="noopener noreferrer">
+            {event.sourceName || "Official Event Page"}
+            </a>
+        </p>
+        )}
+        {/* DESCRIPTION & MAP */}
 
         {event.description && <p className="event-description">{event.description}</p>}
 

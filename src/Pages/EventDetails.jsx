@@ -277,8 +277,55 @@
         );
     }
 
+        const isOnline =
+    (event?.location || "").toLowerCase().includes("online") ||
+    (event?.location || "").toLowerCase().includes("virtual");
+
+
+    const eventSchema = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    startDate: `${event.date}T${event.time}`,
+    endDate: event.endTime ? `${event.date}T${event.endTime}` : `${event.date}T${event.time}`,
+    eventAttendanceMode: isOnline
+        ? "https://schema.org/OnlineEventAttendanceMode"
+        : "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location: isOnline
+        ? {
+            "@type": "VirtualLocation",
+            url: eventUrl
+        }
+        : {
+            "@type": "Place",
+            name: event.location,
+            address: {
+            "@type": "PostalAddress",
+            streetAddress: event.location
+            }
+        },
+    image: "https://invitewave.events/logo2.png",
+    description: event.description,
+    organizer: {
+        "@type": "Organization",
+        name: "InviteWave",
+        url: "https://invitewave.events"
+    }
+    };
+
+
+
     // ✅ Main page
     return (
+
+  <>
+    <script type="application/ld+json">
+      {JSON.stringify(eventSchema)}
+    </script>
+
+    <div className="container event-details">
+
         <div className="container event-details">
         <button className="back-btn" onClick={() => navigate(-1)}>
             ← Back
@@ -437,7 +484,9 @@
         {/* ✅ Recommended shows BELOW Invite section */}
         <RecommendedEvents currentEventId={event.id} category={event.category} />
         </div>
+    </div>
+        </>
     );
     };
-
+    
     export default EventDetails;

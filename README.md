@@ -1,6 +1,6 @@
 # InviteWave – Event Management Web App
 
-🔗 Live Demo: https://yourlivelink.com  
+🔗 Live Demo: (https://www.invitewave.events/)  
 💻 Tech Stack: React, JavaScript, CSS, Firebase, React Router
 
 ## Overview

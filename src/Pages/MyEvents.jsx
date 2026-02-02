@@ -151,10 +151,6 @@
             })}
         </div>
 
-        <p className="note">
-            Note: RSVP totals are demo-only right now (this device). Firebase later will make
-            counts global.
-        </p>
         </div>
     );
     };

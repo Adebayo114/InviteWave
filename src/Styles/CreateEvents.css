@@ -1,152 +1,152 @@
-    .create-event {
-    margin-top: 2rem;
-    max-width: 600px;
+        .create-event {
+        margin-top: 2rem;
+        max-width: 600px;
+        }
+
+        .event-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        }
+
+        .event-form input,
+        .event-form select,
+        .event-form textarea {
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 0.95rem;
+        }
+
+        .event-form textarea {
+        resize: vertical;
+        min-height: 120px;
+        }
+
+        .event-form button {
+        margin-top: 1rem;
+        padding: 0.7rem;
+        border-radius: 25px;
+        border: none;
+        background: #000;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        }
+
+
+            .event-form input[type="time"] {
+        width: 100%;
+        }
+
+        .time-row {
+        display: flex;
+        gap: 1rem;
+        }
+
+        .time-field {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        }
+
+        .time-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+        color: #555;
+        font-weight: 500;
+        }
+
+        .event-form textarea {
+        resize: none;        /* ❌ disable expand */
+        min-height: 120px;   /* fixed visible size */
+        line-height: 1.5;
+        }
+
+
+            .privacy-row {
+        margin: 0.75rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        }
+
+        .privacy-check {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+        }
+
+        .privacy-check input {
+        transform: scale(1.15);
+        }
+
+        .muted {
+        color: #666;
+        font-size: 0.95rem;
+        }
+
+        /* PRO BADGE */
+    .pro-badge {
+    background: linear-gradient(135deg, #f5b301, #ffcc33);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    }
+    .pro-badge::before {
+    content: "★";
+    margin-right: 4px;
+    font-size: 0.75rem;
     }
 
-    .event-form {
+    /* Map url section */
+    .field-block {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 8px;
     }
 
-    .event-form input,
-    .event-form select,
-    .event-form textarea {
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 0.95rem;
-    }
-
-    .event-form textarea {
-    resize: vertical;
-    min-height: 120px;
-    }
-
-    .event-form button {
-    margin-top: 1rem;
-    padding: 0.7rem;
-    border-radius: 25px;
-    border: none;
-    background: #000;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    }
-
-
-        .event-form input[type="time"] {
+    .field-block input {
     width: 100%;
     }
 
-    .time-row {
+    /* Looks like a link but still a button */
+    .mini-help-link {
+    align-self: flex-start;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #111;
+    font-weight: 700;
+    cursor: pointer;
+
+    }
+
+    .mini-help-link:hover {
+    opacity: 0.85;
+    }
+
+    /* "Need help?" under the form */
+    .help-under-form {
     display: flex;
-    gap: 1rem;
+    justify-content: center;
+    margin: 12px 0 6px;
     }
 
-    .time-field {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    .help-pill {
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    padding: 10px 14px;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
     }
 
-    .time-label {
-    font-size: 0.85rem;
-    margin-bottom: 0.3rem;
-    color: #555;
-    font-weight: 500;
+    .help-pill:hover {
+    background: #eee;
     }
-
-    .event-form textarea {
-    resize: none;        /* ❌ disable expand */
-    min-height: 120px;   /* fixed visible size */
-    line-height: 1.5;
-    }
-
-
-        .privacy-row {
-    margin: 0.75rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-    }
-
-    .privacy-check {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-weight: 600;
-    }
-
-    .privacy-check input {
-    transform: scale(1.15);
-    }
-
-    .muted {
-    color: #666;
-    font-size: 0.95rem;
-    }
-
-    /* PRO BADGE */
-.pro-badge {
-  background: linear-gradient(135deg, #f5b301, #ffcc33);
-  color: #000;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
-  margin-left: 6px;
-  vertical-align: middle;
-}
-.pro-badge::before {
-  content: "★";
-  margin-right: 4px;
-  font-size: 0.75rem;
-}
-
-/* Map url section */
-.field-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.field-block input {
-  width: 100%;
-}
-
-/* Looks like a link but still a button */
-.mini-help-link {
-  align-self: flex-start;
-  background: transparent;
-  border: none;
-  padding: 0;
-  color: #111;
-  font-weight: 700;
-  cursor: pointer;
-
-}
-
-.mini-help-link:hover {
-  opacity: 0.85;
-}
-
-/* "Need help?" under the form */
-.help-under-form {
-  display: flex;
-  justify-content: center;
-  margin: 12px 0 6px;
-}
-
-.help-pill {
-  border: 1px solid #ddd;
-  background: #f7f7f7;
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.help-pill:hover {
-  background: #eee;
-}

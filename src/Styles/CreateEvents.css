@@ -103,3 +103,50 @@
   margin-right: 4px;
   font-size: 0.75rem;
 }
+
+/* Map url section */
+.field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-block input {
+  width: 100%;
+}
+
+/* Looks like a link but still a button */
+.mini-help-link {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+
+}
+
+.mini-help-link:hover {
+  opacity: 0.85;
+}
+
+/* "Need help?" under the form */
+.help-under-form {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 6px;
+}
+
+.help-pill {
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.help-pill:hover {
+  background: #eee;
+}

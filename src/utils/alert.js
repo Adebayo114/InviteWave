@@ -63,14 +63,15 @@
     };
 
     // ℹ️ Info popup
-    export const alertInfo = (title, text = "") => {
-    return Swal.fire({
-        icon: "info",
-        title,
-        text,
-        confirmButtonText: "OK",
-    });
-    };
+export const alertInfo = (title, message) => {
+  Swal.fire({
+    title,
+    html: message,   // ✅ this renders HTML properly
+    icon: "info",
+    confirmButtonText: "OK",
+  });
+};
+
 
     // ⚠️ Confirm dialog (returns true/false)
     export const alertConfirm = async ({

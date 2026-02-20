@@ -23,22 +23,13 @@
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/about" element={<About />} />
+        <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/terms-and-conditions" element={<TermsAndCondition />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/help" element={<Help />} />
-
-        {/* ✅ PROTECT EVENT DETAILS TOO */}
-        <Route
-            path="/event/:id"
-            element={
-            <ProtectedRoute>
-                <EventDetails />
-            </ProtectedRoute>
-            }
-        />
 
         {/* PROTECTED ROUTES */}
         <Route
